@@ -282,7 +282,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/05/17/qemu-memory/" itemprop="url">qemu_memory</a></h1>
+                <a class="post-title-link" href="/2018/05/17/qemu-memory/" itemprop="url">qemu memory</a></h1>
         
 
         <div class="post-meta">
@@ -317,8 +317,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术/" itemprop="url" rel="index">
-                    <span itemprop="name">技术</span>
+                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
                   </a>
                 </span>
 
@@ -365,29 +365,84 @@
                 kvm_memory_listener_register
                 memory_listener_register
 </code></pre><p>重点看以下2个函数和1个结构体：<br><code>kvm_memory_listener_register()</code>分配system memory listener,最终也是调用的<code>memory_listener_register()</code><br><code>memory_listener_register()</code>分配IO memory listener<br><code>MemoryListener</code>可以理解为qemu memory管理的函数簇 </p>
-<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void kvm_memory_listener_register(KVMState *s, KVMMemoryListener *kml,</span><br><span class="line">                                  AddressSpace *<span class="keyword">as</span>, int as_id)        </span><br><span class="line">&#123;                                                                     </span><br><span class="line">    int i;                                                            </span><br><span class="line">                                                                      </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span><span class="function"><span class="title">slots</span> = g_malloc0(s-&gt;</span>nr_slots * sizeof(KVMSlot));            </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>as_id = as_id;                                               </span><br><span class="line">   </span><br><span class="line">	分配slot，可配置(libvirt xml memory slot, 或是使用默认<span class="number">32</span>)                                                                   </span><br><span class="line">    <span class="function"><span class="title">for</span> (i = 0; i &lt; s-&gt;</span>nr_slots; i++) &#123;                               </span><br><span class="line">        <span class="function"><span class="title">kml</span>-&gt;</span>slots[i].slot = i;                                       </span><br><span class="line">    &#125;                                                                 </span><br><span class="line">                     </span><br><span class="line">	初始化callback                                                 </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.region_add = kvm_region_add;                        </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.region_del = kvm_region_del;                        </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.log_start = kvm_log_start;                          </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.log_stop = kvm_log_stop;                            </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.log_sync = kvm_log_sync;                            </span><br><span class="line">    <span class="function"><span class="title">kml</span>-&gt;</span>listener.priority = <span class="number">10</span>;                                      </span><br><span class="line">                                                                      </span><br><span class="line">    <span class="function"><span class="title">memory_listener_register</span>(&amp;kml-&gt;</span>listener, <span class="keyword">as</span>);                     </span><br><span class="line">&#125;</span><br><span class="line">```</span><br></pre></td></tr></table></figure>
-<p>void memory_listener_register(MemoryListener <em>listener, AddressSpace </em>filter)<br>{<br>    MemoryListener <em>other = NULL;<br>    AddressSpace </em>as;                                                        </p>
-<pre><code>listener-&gt;address_space_filter = filter;   
-如果listener链表为空或是当前listener优先级比链表中最后一个的优先级还大则直接插入链表最后                              
-if (QTAILQ_EMPTY(&amp;memory_listeners)                                      
-    || listener-&gt;priority &gt;= QTAILQ_LAST(&amp;memory_listeners,              
-                                         memory_listeners)-&gt;priority) {  
-    QTAILQ_INSERT_TAIL(&amp;memory_listeners, listener, link);               
-} else { 
-    listener链表不为空，则找到第1个优先级比其打的插入之前                                                                
-    QTAILQ_FOREACH(other, &amp;memory_listeners, link) {                     
-        if (listener-&gt;priority &lt; other-&gt;priority) {                      
-            break;                                                       
-        }                                                                
-    }                                                                    
-    QTAILQ_INSERT_BEFORE(other, listener, link);                         
-}                                                                        
+<pre><code class="C"><span class="function"><span class="keyword">void</span> <span class="title">kvm_memory_listener_register</span><span class="params">(KVMState *s, KVMMemoryListener *kml,</span></span>
+<span class="function"><span class="params">                                  AddressSpace *as, <span class="keyword">int</span> as_id)</span>        </span>
+<span class="function"></span>{                                                                     
+    <span class="keyword">int</span> i;                                                            
 
-QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {               
-    listener_add_address_space(listener, as);                            
-}                                                                        
-</code></pre><p>}<br><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### <span class="number">1.2</span> 初始化内存管理数据结构</span><br><span class="line">从`cpu_exec_init_all()`开始，该初始化在`MemoryListener`之前，初始化IO memory函数簇，IO、<span class="keyword">system</span> memory的`MemoryRegion`</span><br><span class="line"></span><br><span class="line">	cpu_exec_init_all</span><br><span class="line">		io_mem_init</span><br><span class="line">			memory_region_init_io</span><br><span class="line">		memory_map_init</span><br><span class="line">			memory_region_init</span><br><span class="line">			memory_region_init_io</span><br><span class="line">			address_space_init</span><br><span class="line">				memory_region_transaction_commit</span><br><span class="line">	</span><br><span class="line">`io_mem_init()`初始化IO memory相关的`MemoryRegion`，最终会调用`memory_region_init()`，包括初始化必要的函数簇。</span><br><span class="line">`memory_map_init`初始化IO、<span class="keyword">system</span> memory的`MemoryRegion`，没有函数簇需要初始化。另外，还是初始化IO、memory重要的全局变量`AddressSpace`。其中，`address_space_init()`最重要，初始化了整个qemu进程的memory链。</span><br></pre></td></tr></table></figure></p>
-<p>void address_space_init(AddressSpace <em>as, MemoryRegion </em>root, const char *name)<br>{<br>    memory_region_ref(root);<br>    memory_region_transaction_begin();<br>    as-&gt;ref_count = 1;<br>    as-&gt;root = root; 使用上一步初始化的MemoryRegion<br>    as-&gt;malloced = false;<br>    as-&gt;current_map = g_new(FlatView, 1);<br>    flatview_init(as-&gt;current_map); 初始化FlatView<br>    as-&gt;ioeventfd_nb = 0;<br>    as-&gt;ioeventfds = NULL;<br>    QTAILQ_INSERT_TAIL(&amp;address_spaces, as, address_spaces_link);  插入初始化完成的AddressSpace<br>    as-&gt;name = g_strdup(name ? name : “anonymous”);<br>    address_space_init_dispatch(as); 初始化AddressSpace的dispatch_listener函数簇，个人认为改行放在AddressSpace插入链表前更合理<br>    memory_region_update_pending |= root-&gt;enabled;<br>    memory_region_transaction_commit();<br>}<br><code>`</code>                                            </p>
+    kml-&gt;slots = g_malloc0(s-&gt;nr_slots * <span class="keyword">sizeof</span>(KVMSlot));            
+    kml-&gt;as_id = as_id;                                               
+
+    分配slot，可配置(libvirt xml memory slot, 或是使用默认<span class="number">32</span>)                                                                   
+    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; s-&gt;nr_slots; i++) {                               
+        kml-&gt;slots[i].slot = i;                                       
+    }                                                                 
+
+    初始化callback                                                 
+    kml-&gt;listener.region_add = kvm_region_add;                        
+    kml-&gt;listener.region_del = kvm_region_del;                        
+    kml-&gt;listener.log_start = kvm_log_start;                          
+    kml-&gt;listener.log_stop = kvm_log_stop;                            
+    kml-&gt;listener.log_sync = kvm_log_sync;                            
+    kml-&gt;listener.priority = <span class="number">10</span>;                                      
+
+    memory_listener_register(&amp;kml-&gt;listener, as);                     
+}
+</code></pre>
+<pre><code class="C"><span class="function"><span class="keyword">void</span> <span class="title">memory_listener_register</span><span class="params">(MemoryListener *listener, AddressSpace *filter)</span></span>
+<span class="function"></span>{                                                                            
+    MemoryListener *other = <span class="literal">NULL</span>;                                            
+    AddressSpace *as;                                                        
+
+    listener-&gt;address_space_filter = filter;   
+    如果listener链表为空或是当前listener优先级比链表中最后一个的优先级还大则直接插入链表最后                              
+    <span class="keyword">if</span> (QTAILQ_EMPTY(&amp;memory_listeners)                                      
+        || listener-&gt;priority &gt;= QTAILQ_LAST(&amp;memory_listeners,              
+                                             memory_listeners)-&gt;priority) {  
+        QTAILQ_INSERT_TAIL(&amp;memory_listeners, listener, link);               
+    } <span class="keyword">else</span> { 
+        listener链表不为空，则找到第<span class="number">1</span>个优先级比其打的插入之前                                                                
+        QTAILQ_FOREACH(other, &amp;memory_listeners, link) {                     
+            <span class="keyword">if</span> (listener-&gt;priority &lt; other-&gt;priority) {                      
+                <span class="keyword">break</span>;                                                       
+            }                                                                
+        }                                                                    
+        QTAILQ_INSERT_BEFORE(other, listener, link);                         
+    }                                                                        
+
+    QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {               
+        listener_add_address_space(listener, as);                            
+    }                                                                        
+}
+</code></pre>
+<h3 id="1-2-初始化内存管理数据结构"><a href="#1-2-初始化内存管理数据结构" class="headerlink" title="1.2 初始化内存管理数据结构"></a>1.2 初始化内存管理数据结构</h3><p>从<code>cpu_exec_init_all()</code>开始，该初始化在<code>MemoryListener</code>之前，初始化IO memory函数簇，IO、system memory的<code>MemoryRegion</code></p>
+<pre><code>cpu_exec_init_all
+    io_mem_init
+        memory_region_init_io
+    memory_map_init
+        memory_region_init
+        memory_region_init_io
+        address_space_init
+            memory_region_transaction_commit
+</code></pre><p><code>io_mem_init()</code>初始化IO memory相关的<code>MemoryRegion</code>，最终会调用<code>memory_region_init()</code>，包括初始化必要的函数簇。<br><code>memory_map_init</code>初始化IO、system memory的<code>MemoryRegion</code>，没有函数簇需要初始化。另外，还是初始化IO、memory重要的全局变量<code>AddressSpace</code>。其中，<code>address_space_init()</code>最重要，初始化了整个qemu进程的memory链。</p>
+<pre><code class="C"><span class="function"><span class="keyword">void</span> <span class="title">address_space_init</span><span class="params">(AddressSpace *as, MemoryRegion *root, <span class="keyword">const</span> <span class="keyword">char</span> *name)</span></span>
+<span class="function"></span>{                                                                              
+    memory_region_ref(root);                                                   
+    memory_region_transaction_begin();                                         
+    as-&gt;ref_count = <span class="number">1</span>;                                                         
+    as-&gt;root = root; 使用上一步初始化的MemoryRegion                                                           
+    as-&gt;malloced = <span class="literal">false</span>;                                                      
+    as-&gt;current_map = g_new(FlatView, <span class="number">1</span>);                                      
+    flatview_init(as-&gt;current_map); 初始化FlatView                                            
+    as-&gt;ioeventfd_nb = <span class="number">0</span>;                                                      
+    as-&gt;ioeventfds = <span class="literal">NULL</span>;                                                     
+    QTAILQ_INSERT_TAIL(&amp;address_spaces, as, address_spaces_link);  插入初始化完成的AddressSpace            
+    as-&gt;name = g_strdup(name ? name : <span class="string">"anonymous"</span>);                            
+    address_space_init_dispatch(as); 初始化AddressSpace的dispatch_listener函数簇，个人认为改行放在AddressSpace插入链表前更合理                                           
+    memory_region_update_pending |= root-&gt;enabled;                             
+    memory_region_transaction_commit();                                        
+} 
+</code></pre>
 <h3 id="1-3-初始化machine流程中的memory"><a href="#1-3-初始化machine流程中的memory" class="headerlink" title="1.3 初始化machine流程中的memory"></a>1.3 初始化machine流程中的memory</h3><pre><code>main
     machine_class-&gt;init(current_machine)
         pc_init_isa
