@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="qemu memory," />
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="学无止境">
-<meta name="keywords" content="C, KVM, QEMU">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Citizen4&#39;s Space">
-<meta property="og:url" content="https://citizen4yu.github.io/index.html">
+<meta name="description" content="qemu memory分为2部分，qemu层初始化，kvm层实际分配。 1 qemu层初始化1.1 注册memory管理callback先上代码栈： main     configure_accelerator         accel_init_machine             kvm_init                 kvm_memory_listener_register">
+<meta name="keywords" content="qemu memory">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qemu_memory">
+<meta property="og:url" content="https://citizen4yu.github.io/2018/05/17/qemu-memory/index.html">
 <meta property="og:site_name" content="Citizen4&#39;s Space">
-<meta property="og:description" content="学无止境">
+<meta property="og:description" content="qemu memory分为2部分，qemu层初始化，kvm层实际分配。 1 qemu层初始化1.1 注册memory管理callback先上代码栈： main     configure_accelerator         accel_init_machine             kvm_init                 kvm_memory_listener_register">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-17T14:53:55.146Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Citizen4&#39;s Space">
-<meta name="twitter:description" content="学无止境">
+<meta name="twitter:title" content="qemu_memory">
+<meta name="twitter:description" content="qemu memory分为2部分，qemu层初始化，kvm层实际分配。 1 qemu层初始化1.1 注册memory管理callback先上代码栈： main     configure_accelerator         accel_init_machine             kvm_init                 kvm_memory_listener_register">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://citizen4yu.github.io/"/>
+  <link rel="canonical" href="https://citizen4yu.github.io/2018/05/17/qemu-memory/"/>
 
 
 
 
 
-  <title>Citizen4's Space</title>
+  <title>qemu_memory | Citizen4's Space</title>
   
 
 
@@ -144,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -248,9 +248,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -280,9 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/17/qemu-memory/" itemprop="url">qemu_memory</a></h1>
+          <h1 class="post-title" itemprop="name headline">qemu_memory</h1>
         
 
         <div class="post-meta">
@@ -354,9 +352,7 @@
       
 
       
-        
-          
-            <h1 id="qemu-memory"><a href="#qemu-memory" class="headerlink" title="qemu memory"></a>qemu memory</h1><p>分为2部分，qemu层初始化，kvm层实际分配。</p>
+        <h1 id="qemu-memory"><a href="#qemu-memory" class="headerlink" title="qemu memory"></a>qemu memory</h1><p>分为2部分，qemu层初始化，kvm层实际分配。</p>
 <h2 id="1-qemu层初始化"><a href="#1-qemu层初始化" class="headerlink" title="1 qemu层初始化"></a>1 qemu层初始化</h2><h3 id="1-1-注册memory管理callback"><a href="#1-1-注册memory管理callback" class="headerlink" title="1.1 注册memory管理callback"></a>1.1 注册memory管理callback</h3><p>先上代码栈：</p>
 <pre><code>main
     configure_accelerator
@@ -393,8 +389,6 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
         pc_init_isa
             pc_init1                                                         
 </code></pre>
-          
-        
       
     </div>
     
@@ -409,160 +403,36 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/05/13/github-hexo-blog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/05/13/github-hexo-blog/" itemprop="url">github + hexo = blog</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-13T18:32:53+08:00">
-                2018-05-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/tools/" itemprop="url" rel="index">
-                    <span itemprop="name">tools</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/qemu-memory/" rel="tag"># qemu memory</a>
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="github-创建pages"><a href="#github-创建pages" class="headerlink" title="github 创建pages"></a>github 创建pages</h2><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">命名格式：</span><br><span class="line">yourname<span class="selector-class">.github</span><span class="selector-class">.io</span></span><br><span class="line">注意：</span><br><span class="line">	yourname必须是你的github name，否则blog URL不是以上格式</span><br></pre></td></tr></table></figure>
-<h2 id="安装hexo"><a href="#安装hexo" class="headerlink" title="安装hexo"></a>安装hexo</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">安装hexo-cli</span><br><span class="line">	npm install -g hexo-cli</span><br><span class="line"></span><br><span class="line">hexo建站</span><br><span class="line"><span class="meta">	$</span><span class="bash"> hexo init &lt;your_blog_name&gt;</span></span><br><span class="line"><span class="meta">	$</span><span class="bash"> <span class="built_in">cd</span> &lt;your_blog_name&gt;</span></span><br><span class="line"><span class="meta">	$</span><span class="bash"> npm install</span></span><br></pre></td></tr></table></figure>
-<h2 id="hexo部署到git上"><a href="#hexo部署到git上" class="headerlink" title="hexo部署到git上"></a>hexo部署到git上</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">安装hexo-deployer-git</span><br><span class="line">	npm install hexo-deployer-git --save</span><br><span class="line"></span><br><span class="line">修改_config.yml</span><br><span class="line">	repo: 用git@作前缀，否则每次提交都需要输入github账号密码</span><br><span class="line"></span><br><span class="line">提交到github</span><br><span class="line"><span class="meta">	$</span><span class="bash"> hexo clean</span></span><br><span class="line"><span class="meta">	$</span><span class="bash"> hexo g</span></span><br><span class="line"><span class="meta">	$</span><span class="bash"> hexo d</span></span><br></pre></td></tr></table></figure>
-<h2 id="hexo的Next主题"><a href="#hexo的Next主题" class="headerlink" title="hexo的Next主题"></a>hexo的Next主题</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">下载<span class="keyword">next</span>主题</span><br><span class="line">	在your_blog_name/thems目录下：</span><br><span class="line">		git clone http<span class="variable">s:</span>//github.<span class="keyword">com</span>/iissnan/hexo-theme-<span class="keyword">next</span> themes/<span class="keyword">next</span></span><br><span class="line"></span><br><span class="line">配置为<span class="keyword">next</span>主题</span><br><span class="line">	站点_config.yml下，找到thems字段，修改为<span class="keyword">next</span></span><br><span class="line"></span><br><span class="line">设置favicon图标</span><br><span class="line">	准备favicon.ico格式文件，放入<span class="keyword">source</span>/images目录</span><br><span class="line">	修改配置文件_config.yml</span><br><span class="line">		favicon:</span><br><span class="line">			smal<span class="variable">l:</span> /images/favicon.ico</span><br><span class="line">			medium: /images/favicon.ico:<span class="keyword">w</span></span><br></pre></td></tr></table></figure>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://blog.csdn.net/qq_34290780/article/details/78230706" title="参考" target="_blank" rel="noopener">主要参考</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/13/github-hexo-blog/" rel="next" title="github + hexo = blog">
+                <i class="fa fa-chevron-left"></i> github + hexo = blog
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -572,10 +442,11 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -583,6 +454,10 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
 
 
           
+
+  
+
+
 
         </div>
         
@@ -603,8 +478,17 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -696,6 +580,22 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#qemu-memory"><span class="nav-number">1.</span> <span class="nav-text">qemu memory</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-qemu层初始化"><span class="nav-number">1.1.</span> <span class="nav-text">1 qemu层初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-注册memory管理callback"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 注册memory管理callback</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-初始化machine流程中的memory"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.3 初始化machine流程中的memory</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -836,6 +736,10 @@ QTAILQ_FOREACH(as, &amp;address_spaces, address_spaces_link) {
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
