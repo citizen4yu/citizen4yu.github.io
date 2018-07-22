@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[kvm debug trace]]></title>
+    <url>%2F2018%2F07%2F22%2Fkvm-debug-trace%2F</url>
+    <content type="text"><![CDATA[1234567891011121. 是能需调试的接口echo 1&gt; /sys/kernel/debug/tracing/events/kvm/kvm_set_irq/enableecho 0禁用trace接口2. 相应操作，调用接口 启动虚机，一定有set irq操作3. 查看接口调用情况cat /sys/kernel/debug/tracing/tracetrace内容清零echo 0 &gt; /sys/kernel/debug/tracing/trace]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>kvm debug linux trace</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[kvm嵌套]]></title>
+    <url>%2F2018%2F07%2F22%2Fkvm-nest%2F</url>
+    <content type="text"><![CDATA[开启kvm nested特性即可实现kvm嵌套1234561. 在物理服务器上增加配置文件/etc/modprobe.d/kvm_intel.conf，配置如下内容： options kvm_intel nested=12. 关闭所有虚机，重新加载kvm_intel ko modprobe -v -r kvm_intel modprobe -v kvm_intel3. 修改虚机的cpu模式为host-passthrough，则该虚机已实现kvm的嵌套]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>kvm nest</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[cpu的虚拟化]]></title>
     <url>%2F2018%2F07%2F22%2Fvirt-cpu%2F</url>
     <content type="text"><![CDATA[qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main machine_run_board_init pc_init_v2_12 pc_init1 pc_cpus_init pc_new_cpu ... (此处省略一堆object操作)、 x86_cpu_realizefn qemu_init_vcpu qemu_kvm_start_vcpu qemu_thread_create(创建vcpu线程) qemu_thread_start qemu_kvm_cpu_thread_fn kvm_init_vcpu kvm_get_vcpu kvm_init_cpu_signals kvm_cpu_exec(运行vcpu) kvm_vcpu_ioctl(KVM_RUN) kvm_arch_post_run 虚拟机启动时根据上层（libvirt或qemu cmdline）配置的vcpu个数、cpu feature、cpu topology，初始化cpu属性（pc_cpus_init-&gt;pc_possible_cpu_arch_ids），在创建vcpu线程（pc_new_cpu）。创建vcpu线程有3个工作要做：第一，初始化vcpu（kvm_init_vcpu中发送IO KVM_CREATE_VCPU创建“kvm-vcpu”文件描述符；通过mmap通过memory；根据不同的hypervisor类型属性初始化kvm_arch_init_vcpu）。第二，初始化vcpu线程signals kvm_init_cpu_signals。第三，vcpu真正的工作逻辑kvm_cpu_exec。 4个重要结构体：1234567typedef struct &#123; uint64_t arch_id; int64_t vcpus_count; CpuInstanceProperties props; Object *cpu; const char *type; &#125; CPUArchId; 初始化vcpu基本配置（cpu type、 arch id、 cpu topolopy）。 123456789101112struct CPUState &#123; /*&lt; private &gt;*/ DeviceState parent_obj; /*&lt; public &gt;*/ int nr_cores; int nr_threads; ... uint16_t pending_tlb_flush; int hvf_fd; &#125;; 这个结构包含vcpu所有信息，主要qemu中cpu运行数据。 12345678910111213141516171819struct X86CPU &#123; /*&lt; private &gt;*/ CPUState parent_obj; /*&lt; public &gt;*/ CPUX86State env; bool hyperv_vapic; bool hyperv_relaxed_timing; int hyperv_spinlock_attempts; char *hyperv_vendor_id; ... int32_t node_id; /* NUMA node this CPU belongs to */ int32_t socket_id; int32_t core_id; int32_t thread_id; int32_t hv_max_vps; &#125;; x86结构下cpu特性使用情况，numa信息，状态（以下CPUX86State）。 1234567891011121314151617181920212223typedef struct CPUX86State &#123; /* standard registers */ target_ulong regs[CPU_NB_REGS]; target_ulong eip; target_ulong eflags; /* eflags register. During CPU emulation, CC flags and DF are set to zero because they are stored elsewhere */ /* emulator internal eflags handling */ target_ulong cc_dst; target_ulong cc_src; target_ulong cc_src2; uint32_t cc_op; ... /* vmstate */ uint16_t fpus_vmstate; uint16_t fptag_vmstate; uint16_t fpregs_format_vmstate; uint64_t xss; TPRAccess tpr_access_type; &#125; CPUX86State; x86 vcpu state，更偏底层，很多寄存器会与linux kernel kvm交互。 kvm层vcpu流程kvm_vm_ioctl (KVM_CREATE_VCPU) kvm_vm_ioctl_create_vcpu kvm_arch_vcpu_create (初始化kvm_vcpu结构) create_vcpu_fd （创建vcpu文件描述符，初始化结构kvm_vcpu_fops） kvm_arch_vcpu_postcreate （设置时钟） kvm中vcpu的创建过程相对简单，3个重要步骤： 第一，初始化kvm_vcpu结构；第二，创建vcpu文件描述符；第三，设置时钟。 vcpu running流程：1234kvm_vcpu_compat_ioctl (由上述create_vcpu_fd初始化kvm_vcpu_fops) kvm_cpu_ioctl (KVM_RUN) kvm_arch_vcpu_ioctl_run _vcpu_run 重要结构体：123456789101112struct kvm_vcpu &#123; struct kvm *kvm; #ifdef CONFIG_PREEMPT_NOTIFIERS struct preempt_notifier preempt_notifier;#endif int cpu; int vcpu_id; int srcu_idx; ... bool preempted; struct kvm_vcpu_arch arch;&#125;; CPU扩展知识点（intel）processor : 3 vendor_id : GenuineIntel 表示cpu供应商，GenuineIntel指intel官方产 cpu family : 6 cpu系列号，可以理解为cpu大版本 1： 表示8086和80186级芯片 2： 表示286级芯片 3： 表示386级芯片 4： 表示486级芯片（SX、 DX、 DX2、 DX4） 5： 表示P5级芯片（Pentium处理器和含MMX技术的Pentium处理器） 6： 表示P6级芯片（包含Celeron、 Pentium 2、 Pentium 3系列） F： 表示Xeon处理器、 Pentium 4处理器 model : 58 表示某系列号下的子系列号，可以理解为cpu的小版本号，同时model还有name，如： Westmere、 SandyBridge model name : Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz stepping : 9 又叫步进值，表示该款产品经历一些迭代版本 microcode : 0x1c 微码版本，可以给cpu打补丁 cpu MHz : 2501.000 cache size : 3072 KB physical id : 6 siblings : 1 core id : 0 cpu cores : 1 apicid : 6 initial apicid : 6 fpu : yes fpu_exception : yes cpuid level : 13 wp : yes flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cpuid_fault fsgsbase tsc_adjust smep arat bugs : bogomips : 5002.00 clflush size : 64 cache_alignment : 64 address sizes : 43 bits physical, 48 bits virtual power management:]]></content>
