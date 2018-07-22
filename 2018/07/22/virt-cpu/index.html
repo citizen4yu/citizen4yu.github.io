@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="cpu的虚拟化qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta name="description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
 <meta name="keywords" content="kvm qemu vcpu">
 <meta property="og:type" content="article">
-<meta property="og:title" content="virt_cpu">
+<meta property="og:title" content="cpu的虚拟化">
 <meta property="og:url" content="https://citizen4yu.github.io/2018/07/22/virt-cpu/index.html">
 <meta property="og:site_name" content="Citizen4&#39;s Space">
-<meta property="og:description" content="cpu的虚拟化qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta property="og:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-22T09:24:49.837Z">
+<meta property="og:updated_time" content="2018-07-22T09:33:42.144Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="virt_cpu">
-<meta name="twitter:description" content="cpu的虚拟化qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta name="twitter:title" content="cpu的虚拟化">
+<meta name="twitter:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>virt_cpu | Citizen4's Space</title>
+  <title>cpu的虚拟化 | Citizen4's Space</title>
   
 
 
@@ -280,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">virt_cpu</h1>
+          <h1 class="post-title" itemprop="name headline">cpu的虚拟化</h1>
         
 
         <div class="post-meta">
@@ -352,7 +352,7 @@
       
 
       
-        <h1 id="cpu的虚拟化"><a href="#cpu的虚拟化" class="headerlink" title="cpu的虚拟化"></a>cpu的虚拟化</h1><h2 id="qemu层vcpu虚拟化"><a href="#qemu层vcpu虚拟化" class="headerlink" title="qemu层vcpu虚拟化"></a>qemu层vcpu虚拟化</h2><p>qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建</p>
+        <h2 id="qemu层vcpu虚拟化"><a href="#qemu层vcpu虚拟化" class="headerlink" title="qemu层vcpu虚拟化"></a>qemu层vcpu虚拟化</h2><p>qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建</p>
 <pre><code>main
     machine_run_board_init
         pc_init_v2_12
@@ -625,7 +625,7 @@ power management:
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#cpu的虚拟化"><span class="nav-number">1.</span> <span class="nav-text">cpu的虚拟化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#qemu层vcpu虚拟化"><span class="nav-number">1.1.</span> <span class="nav-text">qemu层vcpu虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kvm层vcpu流程"><span class="nav-number">1.2.</span> <span class="nav-text">kvm层vcpu流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU扩展知识点（intel）"><span class="nav-number">1.3.</span> <span class="nav-text">CPU扩展知识点（intel）</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#qemu层vcpu虚拟化"><span class="nav-number">1.</span> <span class="nav-text">qemu层vcpu虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kvm层vcpu流程"><span class="nav-number">2.</span> <span class="nav-text">kvm层vcpu流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU扩展知识点（intel）"><span class="nav-number">3.</span> <span class="nav-text">CPU扩展知识点（intel）</span></a></li></ol></div>
             
 
           </div>
