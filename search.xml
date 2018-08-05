@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Linux IO多路复用]]></title>
+    <url>%2F2018%2F08%2F05%2FIO%2F</url>
+    <content type="text"><![CDATA[监听文件描述符的状态来进行相应的读写操作，3个函数： 123selectpollepoll 123456789int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);int poll(struct pollfd *fds, nfds_t nfds, int timeout);int epoll_create(int size);int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout); select将监听的读、写、except三类文件描述符分开传入，且nfds最大支持1024个。 poll类似于select，只不过将这3类文件描述符放到一个数组中了，同时fds没有最大限制。 select poll需要逐个轮询每个fd的状态，且每个fd的用户空间数据需要独立copy（内核代码： do_sys_poll -&gt; copy_from_user）。 epoll是以上2个函数的增强版，nfds没有最大限制，理论上跟系统支持的最大文件描述符个数相等，所有fd的用户空间数据一次拷贝完成，且不用轮询每个fd的状态，而是通过注册回调的方式，效率明显提高。 各种I/O阻塞时间比较： 参考：Linux I/O详解]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux IO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[kvm debug trace]]></title>
     <url>%2F2018%2F07%2F22%2Fkvm-debug-trace%2F</url>
     <content type="text"><![CDATA[1234567891011121. 是能需调试的接口echo 1&gt; /sys/kernel/debug/tracing/events/kvm/kvm_set_irq/enableecho 0禁用trace接口2. 相应操作，调用接口 启动虚机，一定有set irq操作3. 查看接口调用情况cat /sys/kernel/debug/tracing/tracetrace内容清零echo 0 &gt; /sys/kernel/debug/tracing/trace]]></content>
@@ -49,7 +60,7 @@
     <url>%2F2018%2F07%2F15%2Fvirtio%2F</url>
     <content type="text"><![CDATA[virtio以下均以网卡virtio代码举例说明（qemu-2.12.0, linux-11.1） 1. 前端驱动前端rececive notify:前端net pci初始化流程： virtio_pci_probe (vp_dev-&gt;vdev.config = &amp;virtio_pci_config_ops) vp_find_vqs vp_try_to_find_vqs setup_vq vring_new_virtqueue (vq-&gt;notify=notify) vp_notify net driver初始化： virtnet_probe try_fill_recv virtqueue_kick virtqueue_notify vq-&gt;notify (此处回调就是上面net pci初始化的vp_notify) vp_notify iowrite16 后端rececive notify:客户机经过net virtio driver的iowrite发送VIRTIO_PCI_QUEUE_NOTIFY后，宿主机就知道有可用的virtio queue，也就是后端，如下： 后端net pci初始化流程： virtio_ioport_write virtio_queue_notify vq-&gt;handle_output（此处回调在qemu virtio net初始化中设置，见如下流程） virtio net初始化： virtio_net_class_init virtio_net_device_realize virtio_net_add_queue virtio_add_queue（vdev-&gt;vq[i].handle_output = handle_output） virtio_net_handle_rx 2. 后端驱动virtio_net_device_realize qemu_new_nic（net_virtio_info结构体中.receive = virtio_net_receive） virtio_net_receive virtio_net_receive_rcu virtqueue_pop（取virtio queue） iov_from_buf（写数据到virtio queue） virtio_notify（发动中断，通知客户机数据写好了） 3. 前后端共享内存的初始化 客户机virtio net驱动初始化时会分配一段内存，在适合时机通知宿主机（write io方式），宿主机得到通知后将客户机获得的这段内存映射到virtio queue virtio_ioport_write（VIRTIO_PCI_QUEUE_PFN） virtio_queue_set_addr virtio_queue_update_rings virtio_init_region_cache]]></content>
       <categories>
-        <category>虚拟机</category>
+        <category>虚拟化</category>
       </categories>
       <tags>
         <tag>qemu kvm</tag>
