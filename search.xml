@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[git proxy方法]]></title>
+    <url>%2F2018%2F09%2F09%2Fgit-proxy%2F</url>
+    <content type="text"><![CDATA[git代理方法： git config --global core.gitproxy &quot;gitproxy&quot; 其中： gitproxy放于/usr/bin下，内容为： #！/bin/bash # 代理服务器IP PROXY=192.168.0.2 # 代理服务器IP port PROXYPORT=808 exec socat STDIO PROXY:$PROXY:$1:$2,proxyport=$PROXYPORT]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>git proxy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[qemu-ga原理]]></title>
+    <url>%2F2018%2F09%2F09%2Fqemu-ga%2F</url>
+    <content type="text"><![CDATA[libvirt添加channel&lt;channel type=&apos;unix&apos;&gt; &lt;source mode=&apos;bind&apos; path=&apos;/var/lib/libvirt/qemu/vm.agent&apos;/&gt; &lt;target type=&apos;virtio&apos; name=&apos;org.qemu.guest_agent_0&apos; state=&apos;connected&apos;/&gt; &lt;address type=&apos;virtio-serial&apos; controller=&apos;0&apos; bus=&apos;0&apos; port=&apos;1&apos;&gt; &lt;/channel&gt; 构建qemu进程cmdline-chardev socket,id=cahrchannel0,path=/var/lib/libvirt/qemu/vm.agent,server,nowait 字符设备 -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,id=channel0,name=org.qemu.guest_agent.0 模拟的virtio串口 虚机内部虚机内部会有模拟的串口设备。 /dev/virtio-ports/org.qemu.guest_agent.0 运行qemu-ga程序（qga/main.c） 工作流程qemu将字符设备模拟成virtio串口挂载给虚机，虚机内部通过qemu-ga程序打开模拟的virtio串口设备，并通过该设备实现与libvirtd守护进程的通信，进而实现guest-agent的功能（可查询、设置虚机内部运行态数据）。数据传输流分2部分： （1）libvirtd守护进程与虚机qemu进程间通过“/var/lib/libvirt/qemu/vm.agent” unix-socket通信。 （2）虚机内部与qemu进程间通过模拟的virtio串口通信。]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>qemu-ga agent</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[libvirt threadpool机制]]></title>
+    <url>%2F2018%2F09%2F09%2Flibvirt-threadpool%2F</url>
+    <content type="text"><![CDATA[1. 初始化一个pthread pool，设置min、max、priority的数量，job回调函数，创建的pthread都是detach的 2. 刚开始只启动min个线程，如果后续job变多，会继续扩展 3. min个线程处于pthread wait状态，等待新的job任务来唤醒 4. 新的job任务来了，获取任务的参数放入job data队列中 5. pthread cond signal唤醒pthread pool中wait态的线程，调用job回调函数处理真正的job处理逻辑]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>libvirtthreadpool</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[linux module参数设置及查询]]></title>
+    <url>%2F2018%2F09%2F09%2Fmodule-set%2F</url>
+    <content type="text"><![CDATA[设置： （1）模块未加载 在/etc/modprobe.d/模块名.conf中增加（如果conf文件没有则新建） options 模块名 参数名=参数值 （2）模块已加载 echo 参数值 &gt; /sys/module/模块名/parameters/参数名 查询： cat /sys/module/模块名/parameters/参数名]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux module</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[coredump]]></title>
+    <url>%2F2018%2F09%2F09%2Fcoredump%2F</url>
+    <content type="text"><![CDATA[开启应用程序coredump echo &quot;|/usr/share/apport/apport %p %s %c&quot; &gt; /proc/sys/kernel/core_pattern 解析生成的coredump apport-unpack 应用程序的coredump 目标目录 gdb 应用程序路径 Coredump]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux debug</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[usbredirserver原理]]></title>
+    <url>%2F2018%2F09%2F09%2Fusbredirserver%2F</url>
+    <content type="text"><![CDATA[基于usbredirserver_0.7.1-1 启动一个usb redirect server，将1个USB设备重定向给usbredirserver /usr/sbin/usbredirserver -p 12345 2-5 将上面重定向的usb server作为redirhost设备，以usb设备的方式挂载给虚拟机libvirt xml格式： &lt;redirdev bus=&apos;usb&apos; type=&apos;tcp&apos;&gt; &lt;source mode=&apos;connect&apos; host=&apos;x.x.x.x&apos; service=&apos;12345&apos;/&gt; &lt;protol tyupe=&apos;raw&apos;&gt; &lt;address type=&apos;usb&apos; bus=&apos;1&apos; port=&apos;1&apos;/&gt; &lt;/redirdev&gt; 在usbredirserver模块中，通过libusb库管理主机上的usb设备，并将usbredirserver通过打开的socket与libusb管理的usb映射，实现usb数据的读写。 main libusb_get_device_list（或libusb_open_device_with_vid_pid，查找给定的usb设备） libusb_open usbrdirhost_open（初始化读写等callback） run_main_loop（真正重定向逻辑，读写逻辑） usbredirhost_read_guest_data（从读usb数据） usbredirhost_write_guest_data（从写usb数据）]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>usbredir qemu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Linux daemon创建要点]]></title>
+    <url>%2F2018%2F09%2F09%2Fdaemon%2F</url>
+    <content type="text"><![CDATA[守护进程创建要点： 改变进程运行目录，一般为root fork子进程，关闭父进程，让init成为新的父进程，并在后台运行 setsid()脱离父进程的会话、进程组 关闭从父进程继承的文件描述符 重定向标准的3个文件描述符（stdout、stdin、stder） 父进程继承的文件掩码mask清零，umask]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>linux daemon</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Linux IO多路复用]]></title>
     <url>%2F2018%2F08%2F05%2FIO%2F</url>
     <content type="text"><![CDATA[监听文件描述符的状态来进行相应的读写操作，3个函数： 123selectpollepoll 123456789int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);int poll(struct pollfd *fds, nfds_t nfds, int timeout);int epoll_create(int size);int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout); select将监听的读、写、except三类文件描述符分开传入，且nfds最大支持1024个。 poll类似于select，只不过将这3类文件描述符放到一个数组中了，同时fds没有最大限制。 select poll需要逐个轮询每个fd的状态，且每个fd的用户空间数据需要独立copy（内核代码： do_sys_poll -&gt; copy_from_user）。 epoll是以上2个函数的增强版，nfds没有最大限制，理论上跟系统支持的最大文件描述符个数相等，所有fd的用户空间数据一次拷贝完成，且不用轮询每个fd的状态，而是通过注册回调的方式，效率明显提高。 各种I/O阻塞时间比较： 参考：Linux I/O详解]]></content>
