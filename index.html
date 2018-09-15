@@ -263,6 +263,183 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/15/libvirt-hash/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/15/libvirt-hash/" itemprop="url">libvirt hashtable原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-15T17:55:04+08:00">
+                2018-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="libvirt-hashable"><a href="#libvirt-hashable" class="headerlink" title="libvirt hashable"></a>libvirt hashable</h2><p>libvirt hashtable可以理解为一个二维数组，只不过这个数组可以处理不同类型的数据结构，<br>且能高效处理数据（libvirt业务相关的）。</p>
+<p>先看2个数据结构：（以libvirt-4.6.0为例）</p>
+<pre><code>/*                           
+ * The entire hash table     
+ */                          
+struct _virHashTable {       
+    virHashEntryPtr *table;  
+    uint32_t seed;           
+    size_t size;             
+    size_t nbElems;          
+    virHashDataFree dataFree;
+    virHashKeyCode keyCode;  
+    virHashKeyEqual keyEqual;
+    virHashKeyCopy keyCopy;  
+    virHashKeyFree keyFree;  
+};
+</code></pre><p>hashtable的设置控制参数、注册回调函数（genkey、freedata等），一维数组。</p>
+<pre><code>/*                                        
+ * A single entry in the hash table       
+ */                                       
+struct _virHashEntry {                    
+    struct _virHashEntry *next;           
+    void *name;                           
+    void *payload;                        
+};                                        
+</code></pre><p>hashtable entry元素，一维数组entry name、 data。</p>
+<p>2个重要的函数：</p>
+<pre><code>uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
+
+static int                                                      
+virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
+                        void *userdata,                         
+                        bool is_update)                             
+</code></pre><p><code>virHashCodeGen()</code> 计算hashtable重要的key<br><code>virHashAddOrUpdateEntry()</code> 向hashtable中插入元素，插入元素的规则是先计算该元素的在hastable中key。找到该key所在链表，再查询是否有冲突的entry name，如果有根据需要是否更新该name的data，或者报错有冲突的name entry。插入key所在链表的方式是头插法。</p>
+<h2 id="图说明"><a href="#图说明" class="headerlink" title="图说明"></a>图说明</h2><p><img src="https://i.imgur.com/wgCLKy1.png" alt=""></p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>当每次更新或插入一个新的entry时，发现所在key值链表大小超过8个时就会将hashtable size扩展： MAX_HASH_LEN * table-&gt;size，MAX_HASH_LEN为8，这样很容易将hashtable设置的很大，而每次扩展都会分配新的内存，有点内存泄露的感觉（不是真的泄露）。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/09/git-proxy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1598,148 +1775,6 @@ setsid()脱离父进程的会话、进程组
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/22/kvm-nest/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/22/kvm-nest/" itemprop="url">kvm嵌套</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T17:45:19+08:00">
-                2018-07-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>开启kvm nested特性即可实现kvm嵌套<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>  在物理服务器上增加配置文件/etc/modprobe.d/kvm_intel.conf，配置如下内容：</span><br><span class="line">	options kvm_intel nested=<span class="number">1</span></span><br><span class="line"><span class="number">2.</span> 关闭所有虚机，重新加载kvm_intel ko</span><br><span class="line">	modprobe -v -r kvm_intel</span><br><span class="line">	modprobe -v kvm_intel</span><br><span class="line"><span class="number">3.</span> 修改虚机的cpu模式为host-passthrough，则该虚机已实现kvm的嵌套</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1794,7 +1829,7 @@ setsid()脱离父进程的会话、进程组
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1816,7 +1851,7 @@ setsid()脱离父进程的会话、进程组
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

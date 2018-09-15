@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[libvirt hashtable原理]]></title>
+    <url>%2F2018%2F09%2F15%2Flibvirt-hash%2F</url>
+    <content type="text"><![CDATA[libvirt hashablelibvirt hashtable可以理解为一个二维数组，只不过这个数组可以处理不同类型的数据结构，且能高效处理数据（libvirt业务相关的）。 先看2个数据结构：（以libvirt-4.6.0为例） /* * The entire hash table */ struct _virHashTable { virHashEntryPtr *table; uint32_t seed; size_t size; size_t nbElems; virHashDataFree dataFree; virHashKeyCode keyCode; virHashKeyEqual keyEqual; virHashKeyCopy keyCopy; virHashKeyFree keyFree; }; hashtable的设置控制参数、注册回调函数（genkey、freedata等），一维数组。 /* * A single entry in the hash table */ struct _virHashEntry { struct _virHashEntry *next; void *name; void *payload; }; hashtable entry元素，一维数组entry name、 data。 2个重要的函数： uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed) static int virHashAddOrUpdateEntry(virHashTablePtr table, const void *name, void *userdata, bool is_update) virHashCodeGen() 计算hashtable重要的keyvirHashAddOrUpdateEntry() 向hashtable中插入元素，插入元素的规则是先计算该元素的在hastable中key。找到该key所在链表，再查询是否有冲突的entry name，如果有根据需要是否更新该name的data，或者报错有冲突的name entry。插入key所在链表的方式是头插法。 图说明 缺点当每次更新或插入一个新的entry时，发现所在key值链表大小超过8个时就会将hashtable size扩展： MAX_HASH_LEN * table-&gt;size，MAX_HASH_LEN为8，这样很容易将hashtable设置的很大，而每次扩展都会分配新的内存，有点内存泄露的感觉（不是真的泄露）。]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>libvirt hashtable</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[git proxy方法]]></title>
     <url>%2F2018%2F09%2F09%2Fgit-proxy%2F</url>
     <content type="text"><![CDATA[git代理方法： git config --global core.gitproxy &quot;gitproxy&quot; 其中： gitproxy放于/usr/bin下，内容为： #！/bin/bash # 代理服务器IP PROXY=192.168.0.2 # 代理服务器IP port PROXYPORT=808 exec socat STDIO PROXY:$PROXY:$1:$2,proxyport=$PROXYPORT]]></content>
