@@ -87,10 +87,12 @@
 <meta property="og:site_name" content="Citizen4&#39;s Space">
 <meta property="og:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-22T09:33:42.144Z">
+<meta property="og:image" content="https://i.imgur.com/pMeArub.png">
+<meta property="og:updated_time" content="2018-09-16T12:48:35.800Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="cpu的虚拟化">
 <meta name="twitter:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta name="twitter:image" content="https://i.imgur.com/pMeArub.png">
 
 
 
@@ -423,7 +425,8 @@ cache_alignment    : 64
 address sizes    : 43 bits physical, 48 bits virtual
 power management:
 
-</code></pre>
+</code></pre><h2 id="VCPU工作模型"><a href="#VCPU工作模型" class="headerlink" title="VCPU工作模型"></a>VCPU工作模型</h2><p><img src="https://i.imgur.com/pMeArub.png" alt="">                          </p>
+
       
     </div>
     
@@ -629,7 +632,7 @@ power management:
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#qemu层vcpu虚拟化"><span class="nav-number">1.</span> <span class="nav-text">qemu层vcpu虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kvm层vcpu流程"><span class="nav-number">2.</span> <span class="nav-text">kvm层vcpu流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU扩展知识点（intel）"><span class="nav-number">3.</span> <span class="nav-text">CPU扩展知识点（intel）</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#qemu层vcpu虚拟化"><span class="nav-number">1.</span> <span class="nav-text">qemu层vcpu虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kvm层vcpu流程"><span class="nav-number">2.</span> <span class="nav-text">kvm层vcpu流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU扩展知识点（intel）"><span class="nav-number">3.</span> <span class="nav-text">CPU扩展知识点（intel）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VCPU工作模型"><span class="nav-number">4.</span> <span class="nav-text">VCPU工作模型</span></a></li></ol></div>
             
 
           </div>
