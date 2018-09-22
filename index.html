@@ -263,6 +263,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/22/qom/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/22/qom/" itemprop="url">qemu object module</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-22T09:29:02+08:00">
+                2018-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="qom模型中几个重要结构体"><a href="#qom模型中几个重要结构体" class="headerlink" title="qom模型中几个重要结构体"></a>qom模型中几个重要结构体</h2><pre><code>struct Object
+struct TypeInfo
+struct TypeImpl    与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用
+struct DeviceState    设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系
+</code></pre><h2 id="设备驱动初始化"><a href="#设备驱动初始化" class="headerlink" title="设备驱动初始化"></a>设备驱动初始化</h2><p>gcc中构造函数特性<code>__attribute__((constructor))</code>，该特性可在main函数之前执行。qemu中所有的设备驱动以构造函数的方式初始化，如下<code>module_init()</code>：</p>
+<pre><code>/* This should not be used directly.  Use block_init etc. instead.  */  
+#define module_init(function, type)                                     
+static void __attribute__((constructor)) do_qemu_init_ ## function(void)
+{                                                                       
+    register_module_init(function, type);                               
+}
+</code></pre><p>各设备驱动会通过type_init、block_init、opts_init、trace_init来调用module_init注册驱动。</p>
+<pre><code>#define block_init(function) module_init(function, MODULE_INIT_BLOCK)
+#define opts_init(function) module_init(function, MODULE_INIT_OPTS)  
+#define type_init(function) module_init(function, MODULE_INIT_QOM)   
+#define trace_init(function) module_init(function, MODULE_INIT_TRACE)
+</code></pre><p>qemu vl.c中main函数爱执行前会将所有的驱动构造函数执行一遍，来注册各设备驱动，接下来初始化各设备驱动：</p>
+<pre><code>type_init
+    module_init
+        register_module_init
+            QTAILQ_INSERT_TAIL    注册设备驱动，插入到qom设备链表
+
+main
+    module_call_init
+        e-&gt;init
+            ivshmem_register_types    初始化设备驱动
+</code></pre><h2 id="设备初始化流程"><a href="#设备初始化流程" class="headerlink" title="设备初始化流程"></a>设备初始化流程</h2><p>（以下以ivshmem设备举例）<br>ivshmem设备qemu cmdline参数：<br><code>-device ivshmem-doorbell,id=shmem0,chardev=charshmem0,vector=2,ioeventfd=on,master=on,bus=pci.0,addr=0xa -chardev socket,id=charshmem0,path=/tmp/mytest</code></p>
+<p>qemu进程启动时，解析命令行，驱动vm都添加了什么设备，再去根据cmdline中设置的参数初始化设备：</p>
+<pre><code>main
+    qemu_add_opts(&amp;qemu_device_opts)    增加device options list
+    qemu_opts_parse_noisily        QEMU_OPTION_device类型会解析各种qemu模拟的设备
+    qemu_opts_foreach    初始化vm中配置的所有device
+        device_init_func
+            qdev_device_add
+                object_new    创建ivshmem设备object
+                    ...
+                    ivshmem_doorbell_init    初始化ivshmem设备全局参数
+                qdev_set_parent_bus    加入到设备总线上
+                object_property_set_bool
+                    ...
+                    ivshmem_doorbell_realize    初始化ivshmem设备
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/15/libvirt-hash/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1634,147 +1816,6 @@ setsid()脱离父进程的会话、进程组
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/22/kvm-debug-trace/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/22/kvm-debug-trace/" itemprop="url">kvm debug trace</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T17:48:28+08:00">
-                2018-07-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 是能需调试的接口</span><br><span class="line">echo <span class="number">1</span>&gt; /sys/kernel/<span class="keyword">debug</span>/tracing/events/kvm/kvm_set_irq/<span class="keyword">enable</span></span><br><span class="line">echo <span class="number">0</span>禁用<span class="keyword">trace</span>接口</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 相应操作，调用接口</span><br><span class="line"> 启动虚机，一定有set irq操作</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 查看接口调用情况</span><br><span class="line">cat /sys/kernel/<span class="keyword">debug</span>/tracing/<span class="keyword">trace</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">trace</span>内容清零</span><br><span class="line">echo <span class="number">0</span> &gt; /sys/kernel/<span class="keyword">debug</span>/tracing/<span class="keyword">trace</span></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1829,7 +1870,7 @@ setsid()脱离父进程的会话、进程组
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1851,7 +1892,7 @@ setsid()脱离父进程的会话、进程组
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

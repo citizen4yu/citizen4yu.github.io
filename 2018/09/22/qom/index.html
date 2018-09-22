@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="qemu qom," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="学无止境">
-<meta name="keywords" content="C, KVM, QEMU">
-<meta property="og:type" content="website">
-<meta property="og:title" content="标签">
-<meta property="og:url" content="https://citizen4yu.github.io/tags/index.html">
+<meta name="description" content="qom模型中几个重要结构体struct Object struct TypeInfo struct TypeImpl    与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用 struct DeviceState    设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系 设备驱动初始化gcc中构造">
+<meta name="keywords" content="qemu qom">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qemu object module">
+<meta property="og:url" content="https://citizen4yu.github.io/2018/09/22/qom/index.html">
 <meta property="og:site_name" content="Citizen4&#39;s Space">
-<meta property="og:description" content="学无止境">
+<meta property="og:description" content="qom模型中几个重要结构体struct Object struct TypeInfo struct TypeImpl    与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用 struct DeviceState    设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系 设备驱动初始化gcc中构造">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-13T07:40:23.720Z">
+<meta property="og:updated_time" content="2018-09-22T02:12:27.132Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="标签">
-<meta name="twitter:description" content="学无止境">
+<meta name="twitter:title" content="qemu object module">
+<meta name="twitter:description" content="qom模型中几个重要结构体struct Object struct TypeInfo struct TypeImpl    与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用 struct DeviceState    设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系 设备驱动初始化gcc中构造">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://citizen4yu.github.io/tags/"/>
+  <link rel="canonical" href="https://citizen4yu.github.io/2018/09/22/qom/"/>
 
 
 
 
 
-  <title>标签 | Citizen4's Space</title>
+  <title>qemu object module | Citizen4's Space</title>
   
 
 
@@ -251,40 +251,206 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/22/qom/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">标签</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                目前共计 18 个标签
-            </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/Linux-IO/" style="font-size: 12px; color: #ccc">Linux IO</a> <a href="/tags/Linux-debug/" style="font-size: 12px; color: #ccc">Linux debug</a> <a href="/tags/Linux-module/" style="font-size: 12px; color: #ccc">Linux module</a> <a href="/tags/git-proxy/" style="font-size: 12px; color: #ccc">git proxy</a> <a href="/tags/github-hexo-blog/" style="font-size: 12px; color: #ccc">github hexo blog</a> <a href="/tags/kvm-debug-linux-trace/" style="font-size: 12px; color: #ccc">kvm debug linux trace</a> <a href="/tags/kvm-nest/" style="font-size: 12px; color: #ccc">kvm nest</a> <a href="/tags/kvm-qemu-interrupt/" style="font-size: 12px; color: #ccc">kvm qemu interrupt</a> <a href="/tags/kvm-qemu-vcpu/" style="font-size: 12px; color: #ccc">kvm qemu vcpu</a> <a href="/tags/libvirt-hashtable/" style="font-size: 12px; color: #ccc">libvirt hashtable</a> <a href="/tags/libvirt-rpc/" style="font-size: 12px; color: #ccc">libvirt rpc</a> <a href="/tags/libvirtthreadpool/" style="font-size: 12px; color: #ccc">libvirtthreadpool</a> <a href="/tags/linux-daemon/" style="font-size: 12px; color: #ccc">linux daemon</a> <a href="/tags/qemu-kvm/" style="font-size: 12px; color: #ccc">qemu kvm</a> <a href="/tags/qemu-memory/" style="font-size: 12px; color: #ccc">qemu memory</a> <a href="/tags/qemu-qom/" style="font-size: 12px; color: #ccc">qemu qom</a> <a href="/tags/qemu-ga-agent/" style="font-size: 12px; color: #ccc">qemu-ga agent</a> <a href="/tags/usbredir-qemu/" style="font-size: 12px; color: #ccc">usbredir qemu</a>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">qemu object module</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-22T09:29:02+08:00">
+                2018-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
+                    <span itemprop="name">虚拟化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h2 id="qom模型中几个重要结构体"><a href="#qom模型中几个重要结构体" class="headerlink" title="qom模型中几个重要结构体"></a>qom模型中几个重要结构体</h2><pre><code>struct Object
+struct TypeInfo
+struct TypeImpl    与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用
+struct DeviceState    设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系
+</code></pre><h2 id="设备驱动初始化"><a href="#设备驱动初始化" class="headerlink" title="设备驱动初始化"></a>设备驱动初始化</h2><p>gcc中构造函数特性<code>__attribute__((constructor))</code>，该特性可在main函数之前执行。qemu中所有的设备驱动以构造函数的方式初始化，如下<code>module_init()</code>：</p>
+<pre><code>/* This should not be used directly.  Use block_init etc. instead.  */  
+#define module_init(function, type)                                     
+static void __attribute__((constructor)) do_qemu_init_ ## function(void)
+{                                                                       
+    register_module_init(function, type);                               
+}
+</code></pre><p>各设备驱动会通过type_init、block_init、opts_init、trace_init来调用module_init注册驱动。</p>
+<pre><code>#define block_init(function) module_init(function, MODULE_INIT_BLOCK)
+#define opts_init(function) module_init(function, MODULE_INIT_OPTS)  
+#define type_init(function) module_init(function, MODULE_INIT_QOM)   
+#define trace_init(function) module_init(function, MODULE_INIT_TRACE)
+</code></pre><p>qemu vl.c中main函数爱执行前会将所有的驱动构造函数执行一遍，来注册各设备驱动，接下来初始化各设备驱动：</p>
+<pre><code>type_init
+    module_init
+        register_module_init
+            QTAILQ_INSERT_TAIL    注册设备驱动，插入到qom设备链表
+
+main
+    module_call_init
+        e-&gt;init
+            ivshmem_register_types    初始化设备驱动
+</code></pre><h2 id="设备初始化流程"><a href="#设备初始化流程" class="headerlink" title="设备初始化流程"></a>设备初始化流程</h2><p>（以下以ivshmem设备举例）<br>ivshmem设备qemu cmdline参数：<br><code>-device ivshmem-doorbell,id=shmem0,chardev=charshmem0,vector=2,ioeventfd=on,master=on,bus=pci.0,addr=0xa -chardev socket,id=charshmem0,path=/tmp/mytest</code></p>
+<p>qemu进程启动时，解析命令行，驱动vm都添加了什么设备，再去根据cmdline中设置的参数初始化设备：</p>
+<pre><code>main
+    qemu_add_opts(&amp;qemu_device_opts)    增加device options list
+    qemu_opts_parse_noisily        QEMU_OPTION_device类型会解析各种qemu模拟的设备
+    qemu_opts_foreach    初始化vm中配置的所有device
+        device_init_func
+            qdev_device_add
+                object_new    创建ivshmem设备object
+                    ...
+                    ivshmem_doorbell_init    初始化ivshmem设备全局参数
+                qdev_set_parent_bus    加入到设备总线上
+                object_property_set_bool
+                    ...
+                    ivshmem_doorbell_realize    初始化ivshmem设备
+</code></pre>
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/qemu-qom/" rel="tag"># qemu qom</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/15/libvirt-hash/" rel="next" title="libvirt hashtable原理">
+                <i class="fa fa-chevron-left"></i> libvirt hashtable原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -317,8 +483,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -410,6 +585,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#qom模型中几个重要结构体"><span class="nav-number">1.</span> <span class="nav-text">qom模型中几个重要结构体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设备驱动初始化"><span class="nav-number">2.</span> <span class="nav-text">设备驱动初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设备初始化流程"><span class="nav-number">3.</span> <span class="nav-text">设备初始化流程</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

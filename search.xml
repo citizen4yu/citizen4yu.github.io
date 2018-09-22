@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[qemu object module]]></title>
+    <url>%2F2018%2F09%2F22%2Fqom%2F</url>
+    <content type="text"><![CDATA[qom模型中几个重要结构体struct Object struct TypeInfo struct TypeImpl 与TypeInfo基本一样，是全局的设备表，而TypeInfo是在设备驱动中初始化设备信息使用 struct DeviceState 设备的所有配置初始化到该结构体，该结构体可以理解为一个枢纽，与设备object有映射关系，与设备总线也有联系 设备驱动初始化gcc中构造函数特性__attribute__((constructor))，该特性可在main函数之前执行。qemu中所有的设备驱动以构造函数的方式初始化，如下module_init()： /* This should not be used directly. Use block_init etc. instead. */ #define module_init(function, type) static void __attribute__((constructor)) do_qemu_init_ ## function(void) { register_module_init(function, type); } 各设备驱动会通过type_init、block_init、opts_init、trace_init来调用module_init注册驱动。 #define block_init(function) module_init(function, MODULE_INIT_BLOCK) #define opts_init(function) module_init(function, MODULE_INIT_OPTS) #define type_init(function) module_init(function, MODULE_INIT_QOM) #define trace_init(function) module_init(function, MODULE_INIT_TRACE) qemu vl.c中main函数爱执行前会将所有的驱动构造函数执行一遍，来注册各设备驱动，接下来初始化各设备驱动： type_init module_init register_module_init QTAILQ_INSERT_TAIL 注册设备驱动，插入到qom设备链表 main module_call_init e-&gt;init ivshmem_register_types 初始化设备驱动 设备初始化流程（以下以ivshmem设备举例）ivshmem设备qemu cmdline参数：-device ivshmem-doorbell,id=shmem0,chardev=charshmem0,vector=2,ioeventfd=on,master=on,bus=pci.0,addr=0xa -chardev socket,id=charshmem0,path=/tmp/mytest qemu进程启动时，解析命令行，驱动vm都添加了什么设备，再去根据cmdline中设置的参数初始化设备： main qemu_add_opts(&amp;qemu_device_opts) 增加device options list qemu_opts_parse_noisily QEMU_OPTION_device类型会解析各种qemu模拟的设备 qemu_opts_foreach 初始化vm中配置的所有device device_init_func qdev_device_add object_new 创建ivshmem设备object ... ivshmem_doorbell_init 初始化ivshmem设备全局参数 qdev_set_parent_bus 加入到设备总线上 object_property_set_bool ... ivshmem_doorbell_realize 初始化ivshmem设备]]></content>
+      <categories>
+        <category>虚拟化</category>
+      </categories>
+      <tags>
+        <tag>qemu qom</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[libvirt hashtable原理]]></title>
     <url>%2F2018%2F09%2F15%2Flibvirt-hash%2F</url>
     <content type="text"><![CDATA[libvirt hashablelibvirt hashtable可以理解为一个二维数组，只不过这个数组可以处理不同类型的数据结构，且能高效处理数据（libvirt业务相关的）。 先看2个数据结构：（以libvirt-4.6.0为例） /* * The entire hash table */ struct _virHashTable { virHashEntryPtr *table; uint32_t seed; size_t size; size_t nbElems; virHashDataFree dataFree; virHashKeyCode keyCode; virHashKeyEqual keyEqual; virHashKeyCopy keyCopy; virHashKeyFree keyFree; }; hashtable的设置控制参数、注册回调函数（genkey、freedata等），一维数组。 /* * A single entry in the hash table */ struct _virHashEntry { struct _virHashEntry *next; void *name; void *payload; }; hashtable entry元素，一维数组entry name、 data。 2个重要的函数： uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed) static int virHashAddOrUpdateEntry(virHashTablePtr table, const void *name, void *userdata, bool is_update) virHashCodeGen() 计算hashtable重要的keyvirHashAddOrUpdateEntry() 向hashtable中插入元素，插入元素的规则是先计算该元素的在hastable中key。找到该key所在链表，再查询是否有冲突的entry name，如果有根据需要是否更新该name的data，或者报错有冲突的name entry。插入key所在链表的方式是头插法。 图说明 缺点当每次更新或插入一个新的entry时，发现所在key值链表大小超过8个时就会将hashtable size扩展： MAX_HASH_LEN * table-&gt;size，MAX_HASH_LEN为8，这样很容易将hashtable设置的很大，而每次扩展都会分配新的内存，有点内存泄露的感觉（不是真的泄露）。]]></content>
