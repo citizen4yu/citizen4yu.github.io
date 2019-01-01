@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[shell-base]]></title>
+    <url>%2F2019%2F01%2F01%2Fshell-base%2F</url>
+    <content type="text"><![CDATA[shell种类sh: Bourne shellbash: Bourne again shell, 兼容sh，但与sh语法上有一些不同dash: Debian Almquist shell, 是ash从NetBSD移植到Linux的，ubuntu从6.10开始支持，Debian也支持，运行速度比较快csh: Cshell 查看系统支持的shell类型# cat /etc/shells /bin/sh /bin/dash /bin/bash /bin/rbash /usr/bin/tmux /usr/bin/screen 查看系统默认shell# echo $SHELL /bin/bash sh一般是软连接到bash、dash # ll /bin/sh lrwxrwxrwx 1 root root 4 Apr 26 2018 /bin/sh -&gt; dash* she-bang脚本文件第一行通常类似于“#！/bin/bash”, 作用是指明脚本的解释程序，如果未执行则使用系统中默认的。UNIX术语中，符号“#”成为“sharp”，符号“！”称为bang，因此“#！”称为she-bang。]]></content>
+      <categories>
+        <category>tools</category>
+      </categories>
+      <tags>
+        <tag>shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[qemu-luks]]></title>
     <url>%2F2019%2F01%2F01%2Fqemu-luks%2F</url>
     <content type="text"><![CDATA[(qemu-2.12.0) 当前支持的加密算法QCRYPTO_CIPHER_ALG_AES_192 QCRYPTO_CIPHER_ALG_AES_256 QCRYPTO_CIPHER_ALG_DES_RFB QCRYPTO_CIPHER_ALG_3DES QCRYPTO_CIPHER_ALG_CAST5_128 QCRYPTO_CIPHER_ALG_SERPENT_128 QCRYPTO_CIPHER_ALG_SERPENT_192 QCRYPTO_CIPHER_ALG_SERPENT_256 QCRYPTO_CIPHER_ALG_TWOFISH_128 QCRYPTO_CIPHER_ALG_TWOFISH_192 QCRYPTO_CIPHER_ALG_TWOFISH_256 luks创建流程img_create bdrv_img_create （磁盘参数解析） bdrv_create （block driver接口） bdrv_create_co_entry cco-&gt;drv-&gt;bdrv_co_create_opts block_crypto_co_create_opts_luks （crypto luks create接口） block_crypto_co_create_generic qcrypto_block_create （加密磁盘block create接口，当前支持2种磁盘格式qcow、luks） block-&gt;driver-&gt;create （block driver create接口） qcrypto_block_luks_create （真正创建luks磁盘）]]></content>

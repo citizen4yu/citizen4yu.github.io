@@ -263,6 +263,161 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2019/01/01/shell-base/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/01/shell-base/" itemprop="url">shell-base</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-01T12:13:03+08:00">
+                2019-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tools/" itemprop="url" rel="index">
+                    <span itemprop="name">tools</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="shell种类"><a href="#shell种类" class="headerlink" title="shell种类"></a>shell种类</h2><p><code>sh: Bourne shell</code><br><code>bash: Bourne again shell, 兼容sh，但与sh语法上有一些不同</code><br><code>dash: Debian Almquist shell, 是ash从NetBSD移植到Linux的，ubuntu从6.10开始支持，Debian也支持，运行速度比较快</code><br><code>csh: Cshell</code></p>
+<h2 id="查看系统支持的shell类型"><a href="#查看系统支持的shell类型" class="headerlink" title="查看系统支持的shell类型"></a>查看系统支持的shell类型</h2><pre><code># cat /etc/shells 
+/bin/sh
+/bin/dash
+/bin/bash
+/bin/rbash
+/usr/bin/tmux
+/usr/bin/screen
+</code></pre><h2 id="查看系统默认shell"><a href="#查看系统默认shell" class="headerlink" title="查看系统默认shell"></a>查看系统默认shell</h2><pre><code># echo $SHELL
+/bin/bash
+</code></pre><p>sh一般是软连接到bash、dash</p>
+<pre><code># ll /bin/sh
+lrwxrwxrwx 1 root root 4 Apr 26  2018 /bin/sh -&gt; dash*
+</code></pre><h2 id="she-bang"><a href="#she-bang" class="headerlink" title="she-bang"></a>she-bang</h2><p>脚本文件第一行通常类似于“#！/bin/bash”, 作用是指明脚本的解释程序，如果未执行则使用系统中默认的。UNIX术语中，符号“#”成为“sharp”，符号“！”称为bang，因此“#！”称为she-bang。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2019/01/01/qemu-luks/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1739,169 +1894,11 @@ gdb 应用程序路径 Coredump
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/09/usbredirserver/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/09/usbredirserver/" itemprop="url">usbredirserver原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-09T16:26:29+08:00">
-                2018-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/virtual/" itemprop="url" rel="index">
-                    <span itemprop="name">virtual</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>基于usbredirserver_0.7.1-1</p>
-<p>启动一个usb redirect server，将1个USB设备重定向给usbredirserver</p>
-<pre><code>/usr/sbin/usbredirserver -p 12345 2-5
-</code></pre><p>将上面重定向的usb server作为redirhost设备，以usb设备的方式挂载给虚拟机<br>libvirt xml格式：</p>
-<pre><code>&lt;redirdev bus=&apos;usb&apos; type=&apos;tcp&apos;&gt;
-    &lt;source mode=&apos;connect&apos; host=&apos;x.x.x.x&apos; service=&apos;12345&apos;/&gt;
-    &lt;protol tyupe=&apos;raw&apos;&gt;
-    &lt;address type=&apos;usb&apos; bus=&apos;1&apos; port=&apos;1&apos;/&gt;
-  &lt;/redirdev&gt;
-</code></pre><p>在usbredirserver模块中，通过libusb库管理主机上的usb设备，并将usbredirserver通过打开的socket与libusb管理的usb映射，实现usb数据的读写。</p>
-<pre><code>main
-    libusb_get_device_list（或libusb_open_device_with_vid_pid，查找给定的usb设备）
-    libusb_open
-    usbrdirhost_open（初始化读写等callback）
-    run_main_loop（真正重定向逻辑，读写逻辑）
-        usbredirhost_read_guest_data（从读usb数据）
-        usbredirhost_write_guest_data（从写usb数据）
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1951,7 +1948,7 @@ gdb 应用程序路径 Coredump
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1973,7 +1970,7 @@ gdb 应用程序路径 Coredump
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
