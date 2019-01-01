@@ -754,7 +754,21 @@ QCRYPTO_CIPHER_ALG_TWOFISH_256
 </tr>
 </tbody>
 </table>
+<p>其中directsync是最安全的方式，直接读写物理磁盘；其他都会有各种层次的cache而不安全，但读写性能会好一些。</p>
+<h2 id="设置流程"><a href="#设置流程" class="headerlink" title="设置流程"></a>设置流程</h2><pre><code>初始化
+blockdev_init
+    blk_set_enable_write_cache
+        blk-&gt;enable_write_cache = wce （设置是否需要writeback）
 
+根据cache类型执行相应动作
+bdrv_flush
+    bdrv_flush_co_entry
+        bdrv_co_flush
+            bs-&gt;drv-&gt;bdrv_co_flush_to_os （guest层刷新到虚拟磁盘的cache）
+            bs-&gt;drv-&gt;bdrv_co_flush_to_disk （host层刷新到物理磁盘cache）
+            bs-&gt;drv-&gt;bdrv_aio_flush （qcow2磁盘刷新到cache）
+根据需求刷新到cache或是writethrough到物理磁盘
+</code></pre>
           
         
       

@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Citizen4&#39;s Space">
 <meta property="og:description" content="初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode()    cache mode flag writethrough     None NOCACHE false   Directsync NOCACHE true   Writeback 0 false   Unsafe NOFLUSH false   Writethrough 0 true    设置c">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-01T02:26:12.347Z">
+<meta property="og:updated_time" content="2019-01-01T04:35:51.095Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="qemu block cache">
 <meta name="twitter:description" content="初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode()    cache mode flag writethrough     None NOCACHE false   Directsync NOCACHE true   Writeback 0 false   Unsafe NOFLUSH false   Writethrough 0 true    设置c">
@@ -432,7 +432,21 @@
 </tr>
 </tbody>
 </table>
+<p>其中directsync是最安全的方式，直接读写物理磁盘；其他都会有各种层次的cache而不安全，但读写性能会好一些。</p>
+<h2 id="设置流程"><a href="#设置流程" class="headerlink" title="设置流程"></a>设置流程</h2><pre><code>初始化
+blockdev_init
+    blk_set_enable_write_cache
+        blk-&gt;enable_write_cache = wce （设置是否需要writeback）
 
+根据cache类型执行相应动作
+bdrv_flush
+    bdrv_flush_co_entry
+        bdrv_co_flush
+            bs-&gt;drv-&gt;bdrv_co_flush_to_os （guest层刷新到虚拟磁盘的cache）
+            bs-&gt;drv-&gt;bdrv_co_flush_to_disk （host层刷新到物理磁盘cache）
+            bs-&gt;drv-&gt;bdrv_aio_flush （qcow2磁盘刷新到cache）
+根据需求刷新到cache或是writethrough到物理磁盘
+</code></pre>
       
     </div>
     
@@ -638,7 +652,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.</span> <span class="nav-text">初始化</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置流程"><span class="nav-number">2.</span> <span class="nav-text">设置流程</span></a></li></ol></div>
             
 
           </div>

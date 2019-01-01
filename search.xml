@@ -25,7 +25,7 @@
   <entry>
     <title><![CDATA[qemu block cache]]></title>
     <url>%2F2018%2F10%2F27%2Fqemu-block-cache%2F</url>
-    <content type="text"><![CDATA[初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode() cache mode flag writethrough None NOCACHE false Directsync NOCACHE true Writeback 0 false Unsafe NOFLUSH false Writethrough 0 true 设置cache mode变量, drive_new(): no cache.writeback cache.direct cache.no-flush None true true false Directsync false true false Writetback true false false Unsafe true false true Writethrough false false false]]></content>
+    <content type="text"><![CDATA[初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode() cache mode flag writethrough None NOCACHE false Directsync NOCACHE true Writeback 0 false Unsafe NOFLUSH false Writethrough 0 true 设置cache mode变量, drive_new(): no cache.writeback cache.direct cache.no-flush None true true false Directsync false true false Writetback true false false Unsafe true false true Writethrough false false false 其中directsync是最安全的方式，直接读写物理磁盘；其他都会有各种层次的cache而不安全，但读写性能会好一些。 设置流程初始化 blockdev_init blk_set_enable_write_cache blk-&gt;enable_write_cache = wce （设置是否需要writeback） 根据cache类型执行相应动作 bdrv_flush bdrv_flush_co_entry bdrv_co_flush bs-&gt;drv-&gt;bdrv_co_flush_to_os （guest层刷新到虚拟磁盘的cache） bs-&gt;drv-&gt;bdrv_co_flush_to_disk （host层刷新到物理磁盘cache） bs-&gt;drv-&gt;bdrv_aio_flush （qcow2磁盘刷新到cache） 根据需求刷新到cache或是writethrough到物理磁盘]]></content>
       <categories>
         <category>virtual</category>
       </categories>
