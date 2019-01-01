@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[qemu-luks]]></title>
+    <url>%2F2019%2F01%2F01%2Fqemu-luks%2F</url>
+    <content type="text"><![CDATA[(qemu-2.12.0) 当前支持的加密算法QCRYPTO_CIPHER_ALG_AES_192 QCRYPTO_CIPHER_ALG_AES_256 QCRYPTO_CIPHER_ALG_DES_RFB QCRYPTO_CIPHER_ALG_3DES QCRYPTO_CIPHER_ALG_CAST5_128 QCRYPTO_CIPHER_ALG_SERPENT_128 QCRYPTO_CIPHER_ALG_SERPENT_192 QCRYPTO_CIPHER_ALG_SERPENT_256 QCRYPTO_CIPHER_ALG_TWOFISH_128 QCRYPTO_CIPHER_ALG_TWOFISH_192 QCRYPTO_CIPHER_ALG_TWOFISH_256 luks创建流程img_create bdrv_img_create （磁盘参数解析） bdrv_create （block driver接口） bdrv_create_co_entry cco-&gt;drv-&gt;bdrv_co_create_opts block_crypto_co_create_opts_luks （crypto luks create接口） block_crypto_co_create_generic qcrypto_block_create （加密磁盘block create接口，当前支持2种磁盘格式qcow、luks） block-&gt;driver-&gt;create （block driver create接口） qcrypto_block_luks_create （真正创建luks磁盘）]]></content>
+      <categories>
+        <category>virtual</category>
+      </categories>
+      <tags>
+        <tag>qemu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[qemu block cache]]></title>
     <url>%2F2018%2F10%2F27%2Fqemu-block-cache%2F</url>
     <content type="text"><![CDATA[初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode() cache mode flag writethrough None NOCACHE false Directsync NOCACHE true Writeback 0 false Unsafe NOFLUSH false Writethrough 0 true 设置cache mode变量, drive_new(): no cache.writeback cache.direct cache.no-flush None true true false Directsync false true false Writetback true false false Unsafe true false true Writethrough false false false]]></content>
