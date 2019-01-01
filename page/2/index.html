@@ -263,6 +263,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/08/05/IO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/05/IO/" itemprop="url">Linux IO多路复用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-05T08:36:24+08:00">
+                2018-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>监听文件描述符的状态来进行相应的读写操作，3个函数：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">poll</span><br><span class="line">epoll</span><br></pre></td></tr></table></figure>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span>(<span class="params"><span class="keyword">int</span> nfds, fd_set *readfds, fd_set *writefds,</span></span></span><br><span class="line"><span class="function"><span class="params">           fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span>(<span class="params"><span class="keyword">struct</span> pollfd *fds, nfds_t nfds, <span class="keyword">int</span> timeout</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span>(<span class="params"><span class="keyword">int</span> size</span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span>(<span class="params"><span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *<span class="keyword">event</span></span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span>(<span class="params"><span class="keyword">int</span> epfd, <span class="keyword">struct</span> epoll_event *events,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout</span>)</span>;</span><br></pre></td></tr></table></figure>
+<p><code>select</code>将监听的读、写、except三类文件描述符分开传入，且nfds最大支持1024个。</p>
+<p><code>poll</code>类似于select，只不过将这3类文件描述符放到一个数组中了，同时fds没有最大限制。</p>
+<p><code>select</code> <code>poll</code>需要逐个轮询每个fd的状态，且每个fd的用户空间数据需要独立copy（内核代码： <code>do_sys_poll</code> -&gt; <code>copy_from_user</code>）。</p>
+<p><code>epoll</code>是以上2个函数的增强版，nfds没有最大限制，理论上跟系统支持的最大文件描述符个数相等，所有fd的用户空间数据一次拷贝完成，且不用轮询每个fd的状态，而是通过注册回调的方式，效率明显提高。</p>
+<p>各种I/O阻塞时间比较：<br><img src="https://i.imgur.com/5h8Uh6N.png" alt=""></p>
+<p>参考：<br><a href="https://segmentfault.com/a/1190000003063859" target="_blank" rel="noopener">Linux I/O详解</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/22/kvm-debug-trace/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -317,8 +467,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -357,6 +507,7 @@
         
           
             <figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 是能需调试的接口</span><br><span class="line">echo <span class="number">1</span>&gt; /sys/kernel/<span class="keyword">debug</span>/tracing/events/kvm/kvm_set_irq/<span class="keyword">enable</span></span><br><span class="line">echo <span class="number">0</span>禁用<span class="keyword">trace</span>接口</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 相应操作，调用接口</span><br><span class="line"> 启动虚机，一定有set irq操作</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span> 查看接口调用情况</span><br><span class="line">cat /sys/kernel/<span class="keyword">debug</span>/tracing/<span class="keyword">trace</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">trace</span>内容清零</span><br><span class="line">echo <span class="number">0</span> &gt; /sys/kernel/<span class="keyword">debug</span>/tracing/<span class="keyword">trace</span></span><br></pre></td></tr></table></figure>
+
           
         
       
@@ -458,8 +609,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -499,645 +650,6 @@
           
             <p>开启kvm nested特性即可实现kvm嵌套<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>  在物理服务器上增加配置文件/etc/modprobe.d/kvm_intel.conf，配置如下内容：</span><br><span class="line">	options kvm_intel nested=<span class="number">1</span></span><br><span class="line"><span class="number">2.</span> 关闭所有虚机，重新加载kvm_intel ko</span><br><span class="line">	modprobe -v -r kvm_intel</span><br><span class="line">	modprobe -v kvm_intel</span><br><span class="line"><span class="number">3.</span> 修改虚机的cpu模式为host-passthrough，则该虚机已实现kvm的嵌套</span><br></pre></td></tr></table></figure></p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/22/virt-cpu/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/22/virt-cpu/" itemprop="url">cpu的虚拟化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T16:39:43+08:00">
-                2018-07-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="qemu层vcpu虚拟化"><a href="#qemu层vcpu虚拟化" class="headerlink" title="qemu层vcpu虚拟化"></a>qemu层vcpu虚拟化</h2><p>qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建</p>
-<pre><code>main
-    machine_run_board_init
-        pc_init_v2_12
-            pc_init1
-                pc_cpus_init
-                    pc_new_cpu
-                        ...     (此处省略一堆object操作)、
-                        x86_cpu_realizefn
-                            qemu_init_vcpu
-                                qemu_kvm_start_vcpu
-                                    qemu_thread_create(创建vcpu线程)
-                                        qemu_thread_start
-                                            qemu_kvm_cpu_thread_fn
-                                                kvm_init_vcpu
-                                                    kvm_get_vcpu
-                                                kvm_init_cpu_signals
-                                                kvm_cpu_exec(运行vcpu)
-                                                    kvm_vcpu_ioctl(KVM_RUN)
-                                                    kvm_arch_post_run
-</code></pre><p>虚拟机启动时根据上层（libvirt或qemu cmdline）配置的vcpu个数、cpu feature、cpu topology，初始化cpu属性（pc_cpus_init-&gt;pc_possible_cpu_arch_ids），在创建vcpu线程（pc_new_cpu）。创建vcpu线程有3个工作要做：第一，初始化vcpu（kvm_init_vcpu中发送IO KVM_CREATE_VCPU创建“kvm-vcpu”文件描述符；通过mmap通过memory；根据不同的hypervisor类型属性初始化kvm_arch_init_vcpu）。第二，初始化vcpu线程signals<br> kvm_init_cpu_signals。第三，vcpu真正的工作逻辑kvm_cpu_exec。</p>
-<p>4个重要结构体：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span>                </span><br><span class="line">    <span class="keyword">uint64_t</span> arch_id;           </span><br><span class="line">    <span class="keyword">int64_t</span> vcpus_count;        </span><br><span class="line">    CpuInstanceProperties props;</span><br><span class="line">    Object *cpu;                </span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *type;           </span><br><span class="line">&#125; CPUArchId;</span><br></pre></td></tr></table></figure></p>
-<p>初始化vcpu基本配置（cpu type、 arch id、 cpu topolopy）。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CPUState</span> &#123;</span>          </span><br><span class="line">    <span class="comment">/*&lt; private &gt;*/</span>        </span><br><span class="line">    DeviceState parent_obj;</span><br><span class="line">    <span class="comment">/*&lt; public &gt;*/</span>         </span><br><span class="line">                           </span><br><span class="line">    <span class="keyword">int</span> nr_cores;          </span><br><span class="line">    <span class="keyword">int</span> nr_threads;        </span><br><span class="line">	 ...</span><br><span class="line">	<span class="keyword">uint16_t</span> pending_tlb_flush;</span><br><span class="line">                               </span><br><span class="line">    <span class="keyword">int</span> hvf_fd;                </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这个结构包含vcpu所有信息，主要qemu中cpu运行数据。</p>
-<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">struct X86CPU &#123;                  </span><br><span class="line">    <span class="comment">/*&lt; private &gt;*/</span>              </span><br><span class="line">    CPUState parent_obj<span class="comment">;         </span></span><br><span class="line">    <span class="comment">/*&lt; public &gt;*/</span>               </span><br><span class="line">                                 </span><br><span class="line">    CPUX86State env<span class="comment">;             </span></span><br><span class="line">                                 </span><br><span class="line">    <span class="keyword">bool </span>hyperv_vapic<span class="comment">;           </span></span><br><span class="line">    <span class="keyword">bool </span>hyperv_relaxed_timing<span class="comment">;  </span></span><br><span class="line">    int hyperv_spinlock_attempts<span class="comment">;</span></span><br><span class="line">    char *hyperv_vendor_id<span class="comment">;</span></span><br><span class="line">		...</span><br><span class="line">    int32_t node_id<span class="comment">; /* NUMA node this CPU belongs to */</span></span><br><span class="line">    int32_t socket_id<span class="comment">;                                  </span></span><br><span class="line">    int32_t core_id<span class="comment">;                                    </span></span><br><span class="line">    int32_t thread_id<span class="comment">;                                  </span></span><br><span class="line">                                                        </span><br><span class="line">    int32_t hv_max_vps<span class="comment">;                                 </span></span><br><span class="line">&#125;<span class="comment">;</span></span><br></pre></td></tr></table></figure>
-<p>x86结构下cpu特性使用情况，numa信息，状态（以下CPUX86State）。   </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">CPUX86State</span> &#123;</span>                                         </span><br><span class="line">    <span class="comment">/* standard registers */</span>                                         </span><br><span class="line">    target_ulong regs[CPU_NB_REGS];                                  </span><br><span class="line">    target_ulong eip;                                                </span><br><span class="line">    target_ulong eflags; <span class="comment">/* eflags register. During CPU emulation, CC</span></span><br><span class="line"><span class="comment">                        flags and DF are set to zero because they are</span></span><br><span class="line"><span class="comment">                        stored elsewhere */</span>                          </span><br><span class="line">                                                                     </span><br><span class="line">    <span class="comment">/* emulator internal eflags handling */</span>                          </span><br><span class="line">    target_ulong cc_dst;                                             </span><br><span class="line">    target_ulong cc_src;                                             </span><br><span class="line">    target_ulong cc_src2;                                            </span><br><span class="line">    <span class="keyword">uint32_t</span> cc_op;</span><br><span class="line">		...</span><br><span class="line">	    <span class="comment">/* vmstate */</span>                  </span><br><span class="line">    <span class="keyword">uint16_t</span> fpus_vmstate;         </span><br><span class="line">    <span class="keyword">uint16_t</span> fptag_vmstate;        </span><br><span class="line">    <span class="keyword">uint16_t</span> fpregs_format_vmstate;</span><br><span class="line">                                   </span><br><span class="line">    <span class="keyword">uint64_t</span> xss;                  </span><br><span class="line">                                   </span><br><span class="line">    TPRAccess tpr_access_type;     </span><br><span class="line">&#125; CPUX86State;</span><br></pre></td></tr></table></figure>
-<p>x86 vcpu state，更偏底层，很多寄存器会与linux kernel kvm交互。</p>
-<h2 id="kvm层vcpu流程"><a href="#kvm层vcpu流程" class="headerlink" title="kvm层vcpu流程"></a>kvm层vcpu流程</h2><pre><code>kvm_vm_ioctl (KVM_CREATE_VCPU)
-    kvm_vm_ioctl_create_vcpu
-        kvm_arch_vcpu_create (初始化kvm_vcpu结构)
-        create_vcpu_fd （创建vcpu文件描述符，初始化结构kvm_vcpu_fops）
-        kvm_arch_vcpu_postcreate （设置时钟）
-</code></pre><p>kvm中vcpu的创建过程相对简单，3个重要步骤： 第一，初始化kvm_vcpu结构；第二，创建vcpu文件描述符；第三，设置时钟。</p>
-<p>vcpu running流程：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kvm_vcpu_compat_ioctl (由上述create_vcpu_fd初始化kvm_vcpu_fops)</span><br><span class="line">	kvm_cpu_ioctl (<span class="name">KVM_RUN</span>)</span><br><span class="line">		kvm_arch_vcpu_ioctl_run</span><br><span class="line">			_vcpu_run</span><br></pre></td></tr></table></figure></p>
-<p>重要结构体：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kvm_vcpu</span> &#123;</span>                            </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">kvm</span> *<span class="title">kvm</span>;</span>                         </span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_PREEMPT_NOTIFIERS              </span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">preempt_notifier</span> <span class="title">preempt_notifier</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span>                                       </span></span><br><span class="line">    <span class="keyword">int</span> cpu;                                 </span><br><span class="line">    <span class="keyword">int</span> vcpu_id;                             </span><br><span class="line">    <span class="keyword">int</span> srcu_idx;</span><br><span class="line">		...</span><br><span class="line">    <span class="keyword">bool</span> preempted;           </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">kvm_vcpu_arch</span> <span class="title">arch</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-<h2 id="CPU扩展知识点（intel）"><a href="#CPU扩展知识点（intel）" class="headerlink" title="CPU扩展知识点（intel）"></a>CPU扩展知识点（intel）</h2><pre><code>processor    : 3
-vendor_id    : GenuineIntel        表示cpu供应商，GenuineIntel指intel官方产
-cpu family  : 6                    cpu系列号，可以理解为cpu大版本
-                                    1： 表示8086和80186级芯片
-                                    2： 表示286级芯片
-                                    3： 表示386级芯片
-                                    4： 表示486级芯片（SX、 DX、 DX2、 DX4）
-                                    5： 表示P5级芯片（Pentium处理器和含MMX技术的Pentium处理器）
-                                    6： 表示P6级芯片（包含Celeron、 Pentium 2、 Pentium 3系列）
-                                    F： 表示Xeon处理器、 Pentium 4处理器
-model        : 58                   表示某系列号下的子系列号，可以理解为cpu的小版本号，同时model还有name，如： Westmere、 SandyBridge
-model name    : Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz
-stepping    : 9                     又叫步进值，表示该款产品经历一些迭代版本
-microcode    : 0x1c                 微码版本，可以给cpu打补丁
-cpu MHz        : 2501.000
-cache size    : 3072 KB
-physical id    : 6
-siblings    : 1
-core id        : 0
-cpu cores    : 1
-apicid        : 6
-initial apicid    : 6
-fpu        : yes
-fpu_exception    : yes
-cpuid level    : 13
-wp        : yes
-flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cpuid_fault fsgsbase tsc_adjust smep arat
-bugs        :
-bogomips    : 5002.00
-clflush size    : 64
-cache_alignment    : 64
-address sizes    : 43 bits physical, 48 bits virtual
-power management:
-
-</code></pre><h2 id="VCPU工作模型"><a href="#VCPU工作模型" class="headerlink" title="VCPU工作模型"></a>VCPU工作模型</h2><p><img src="https://i.imgur.com/pMeArub.png" alt="">                          </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/15/kvm-interrupt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/15/kvm-interrupt/" itemprop="url">kvm-interrupt</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-15T21:47:46+08:00">
-                2018-07-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="kvm中断"><a href="#kvm中断" class="headerlink" title="kvm中断"></a>kvm中断</h1><p>Linux kernel中断分为local APIC和IO API两种中断控制器，local APIC是实际处理中断的组件，IO APIC是分发外部设备的中断请求，最终还是由local APIC来处理中断。另外，多核cpu系统中，没有cpu都有1个ksoftirqd线程专门用于处理CPU上的中断。kvm、qemu的中断是模拟IO APIC组件，实现IO APIC的分发外设中断逻辑。<br>以下基于linux-3.11.1、qemu-2.12.0</p>
-<h2 id="1-kvm中断注入准备工作（中断的虚拟化）"><a href="#1-kvm中断注入准备工作（中断的虚拟化）" class="headerlink" title="1. kvm中断注入准备工作（中断的虚拟化）"></a>1. kvm中断注入准备工作（中断的虚拟化）</h2><pre><code>kvm_vm_ioctl（KVM_IRQ_LINE）
-    kvm_vm_ioctl_irq_line
-        kvm_set_irq（irq_set[i].set）
-            kvm_ioapic_set_irq（有qemu各设备中断初始化中断路由表时设置callback，如下流程）
-                ioapic_service
-                    ioapic_deliver
-                        kvm_irq_delivery_to_apic
-                            kvm_apic_set_irq
-                                __apic_accept_irq（APIC_DM_FIXED，kvm_x86_ops-&gt;deliver_posted_interrupt，VMX初始化时设置deliver回调，见如下流程）
-                                    vmx_deliver_posted_interrupt（设置中断位，并请求事件KVM_REQ_EVENT，等待下次vm entry进行中断注入）
-
-qemu进程各设备初始化时注册中断路由表：
-    kvm_irqchip_commit_routes
-        kvm_vm_ioctl（KVM_SET_GSI_ROUTING，调用io进入kvm处理流程）
-            kvm_vm_ioctl（KVM_SET_GSI_ROUTING）
-                kvm_set_irq_routing
-                    setup_routing_entry
-                        kvm_set_routing_entry
-                            kvm_set_pic_irq（传统PCI中断）
-                            kvm_set_pic_irq（传统PIC中断）
-                            kvm_set_ioapic_irq（MSI中断）
-
-VMX初始化：
-    vmx_init
-        kvm_init（vmx_x86_ops, .deliver_posted_interrupt = vmx_deliver_posted_interrupt）
-</code></pre><h2 id="2-kvm中断注入"><a href="#2-kvm中断注入" class="headerlink" title="2. kvm中断注入"></a>2. kvm中断注入</h2><pre><code>kvm_vm_ioctl（KVM_CREATE_VCPU）
-    kvm_vm_ioctl_create_vcpu
-        create_vcpu_fd（注册kvm_vcpu_fops，.compat_ioctl= kvm_vcpu_compat_ioctl）
-
-kvm_vcpu_compat_ioctl（KVM_RUN）
-    kvm_arch_vcpu_ioctl_run
-        __vcpu_run
-            vcpu_enter_guest
-                inject_pending_event（加载到真正的cpu上）
-                    kvm_cpu_has_injectable_intr
-                        kvm_apic_has_interrupt
-                            apic_find_highest_irr（kvm_x86_ops-&gt;sync_pir_to_irr=vmx_sync_pir_to_irr）
-                                vmx_sync_pir_to_irr
-                                apic_search_irr
-                    kvm_queue_interrupt（记录中断到vcpu）
-                    vmx_inject_irq（vmx_x86_ops，.set_irq = vmx_inject_irq）
-                        vmcs_write32（根据intel硬件手册写到对应寄存器）
-</code></pre><h2 id="3-中断向量表的初始化"><a href="#3-中断向量表的初始化" class="headerlink" title="3. 中断向量表的初始化"></a>3. 中断向量表的初始化</h2><pre><code>qemu中初始化中断向量表：
-    main
-        machine_run_board_init
-            pc_init_v2_12
-                pc_init1
-                    kvm_pc_setup_irq_routing
-                        kvm_irqchip_commit_routes
-
-kvm中断向量表的初始化：
-    kvm_vm_ioctl
-        kvm_arch_vm_ioctl
-            kvm_setup_default_irq_routing（default_routing初始化了PIC、IOPIC）
-                kvm_set_irq_routing（分配中断向量表空间，并将default_routing每个中断元素填充到中断向量表的map表中）
-                    setup_routing_entry（设置中断entry各元素的值，并插入map表）
-                        kvm_set_routing_entry（初始化中断的set callback）
-                    kvm_irq_routing_update（更新虚机kvm的中断向量表）
-
-3个重要的结构体：
-    中断entry信息，x86 32bit共40个，x86 64bit共64个，包括PIC、IOPIC、MSI看后续分析
-    struct kvm_irq_routing_entry {                 
-        __u32 gsi;                                 
-        __u32 type;                                
-        __u32 flags;                               
-           __u32 pad;                                 
-        union {                                    
-            struct kvm_irq_routing_irqchip irqchip;
-            struct kvm_irq_routing_msi msi;        
-            __u32 pad[8];                          
-            } u;                                       
-    };                                             
-
-    kvm在kernel中的中断entry，其实跟上面的kvm_irq_routing_entry差不多，区别在于增加了set这个callback，上文有说到                                
-    struct kvm_kernel_irq_routing_entry {                    
-        u32 gsi;                                             
-        u32 type;                                            
-        int (*set)(struct kvm_kernel_irq_routing_entry *e,   
-               struct kvm *kvm, int irq_source_id, int level,
-              bool line_status);                            
-        union {                                              
-            struct {                                         
-                    unsigned irqchip;                            
-                 unsigned pin;                                
-        } irqchip;                                       
-        struct msi_msg msi;                              
-            };                                                   
-        struct hlist_node link;                              
-    };                                                           
-
-    真正的kvm中断向量表，包含kvm所有的中断类型PIC、IOPOC、MSI、map用于将同一个gsi号的不同中断进行归类（hash表的味道）
-    struct kvm_irq_routing_table {                                    
-        int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];              
-        struct kvm_kernel_irq_routing_entry *rt_entries;              
-        u32 nr_rt_entries;                                            
-        /*                                                            
-         * Array indexed by gsi. Each entry contains list of irq chips
-         * the gsi is connected to.                                   
-         */                                                           
-        struct hlist_head map[0];                                     
-    }; 
-</code></pre><h2 id="4-MSI中断"><a href="#4-MSI中断" class="headerlink" title="4. MSI中断"></a>4. MSI中断</h2><pre><code>写一段特殊内存产生中断，相比传统PIC中断的好处是不在受中断管脚数量的限制，同时也提高了设备的多个中断的并行效率（因为传统中断因管脚有限，存在复用）。MSI中断实在PCI2.2协议中定义的，其扩展类型MSI-X中断是在PCI3.0协议中定义。                                                               
-</code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/15/virtio/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/15/virtio/" itemprop="url">virtio</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-15T21:11:33+08:00">
-                2018-07-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="virtio"><a href="#virtio" class="headerlink" title="virtio"></a>virtio</h1><p>以下均以网卡virtio代码举例说明（qemu-2.12.0, linux-11.1）</p>
-<h2 id="1-前端驱动"><a href="#1-前端驱动" class="headerlink" title="1. 前端驱动"></a>1. 前端驱动</h2><h3 id="前端rececive-notify"><a href="#前端rececive-notify" class="headerlink" title="前端rececive notify:"></a>前端rececive notify:</h3><pre><code>前端net pci初始化流程：
-virtio_pci_probe (vp_dev-&gt;vdev.config = &amp;virtio_pci_config_ops)
-    vp_find_vqs
-        vp_try_to_find_vqs
-            setup_vq
-                vring_new_virtqueue (vq-&gt;notify=notify)
-                    vp_notify
-
-net driver初始化：
-virtnet_probe
-    try_fill_recv
-        virtqueue_kick
-            virtqueue_notify
-                vq-&gt;notify (此处回调就是上面net pci初始化的vp_notify)
-                    vp_notify
-                        iowrite16
-</code></pre><h3 id="后端rececive-notify"><a href="#后端rececive-notify" class="headerlink" title="后端rececive notify:"></a>后端rececive notify:</h3><pre><code>客户机经过net virtio driver的iowrite发送VIRTIO_PCI_QUEUE_NOTIFY后，宿主机就知道有可用的virtio queue，也就是后端，如下：
-后端net pci初始化流程：
-virtio_ioport_write
-    virtio_queue_notify
-        vq-&gt;handle_output（此处回调在qemu virtio net初始化中设置，见如下流程）
-
-virtio net初始化：
-virtio_net_class_init
-    virtio_net_device_realize
-        virtio_net_add_queue
-            virtio_add_queue（vdev-&gt;vq[i].handle_output = handle_output）
-                virtio_net_handle_rx
-</code></pre><h2 id="2-后端驱动"><a href="#2-后端驱动" class="headerlink" title="2. 后端驱动"></a>2. 后端驱动</h2><pre><code>virtio_net_device_realize
-    qemu_new_nic（net_virtio_info结构体中.receive = virtio_net_receive）
-        virtio_net_receive
-            virtio_net_receive_rcu
-                virtqueue_pop（取virtio queue）
-                iov_from_buf（写数据到virtio queue）
-                virtio_notify（发动中断，通知客户机数据写好了）
-</code></pre><h2 id="3-前后端共享内存的初始化"><a href="#3-前后端共享内存的初始化" class="headerlink" title="3. 前后端共享内存的初始化"></a>3. 前后端共享内存的初始化</h2><pre><code> 客户机virtio net驱动初始化时会分配一段内存，在适合时机通知宿主机（write io方式），宿主机得到通知后将客户机获得的这段内存映射到virtio queue
-virtio_ioport_write（VIRTIO_PCI_QUEUE_PFN）
-    virtio_queue_set_addr
-        virtio_queue_update_rings
-            virtio_init_region_cache
-</code></pre>
           
         
       
@@ -1239,8 +751,8 @@ virtio_ioport_write（VIRTIO_PCI_QUEUE_PFN）
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -1390,8 +902,8 @@ virtio_ioport_write（VIRTIO_PCI_QUEUE_PFN）
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -1769,7 +1281,7 @@ EPT可以理解为硬件方式的影子页表
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1791,7 +1303,7 @@ EPT可以理解为硬件方式的影子页表
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1856,7 +1368,7 @@ EPT可以理解为硬件方式的影子页表
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

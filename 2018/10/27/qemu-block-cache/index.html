@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="kvm qemu interrupt," />
+  <meta name="keywords" content="qemu," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="kvm中断Linux kernel中断分为local APIC和IO API两种中断控制器，local APIC是实际处理中断的组件，IO APIC是分发外部设备的中断请求，最终还是由local APIC来处理中断。另外，多核cpu系统中，没有cpu都有1个ksoftirqd线程专门用于处理CPU上的中断。kvm、qemu的中断是模拟IO APIC组件，实现IO APIC的分发外设中断逻辑。以下基">
-<meta name="keywords" content="kvm qemu interrupt">
+<meta name="description" content="初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode()    cache mode flag writethrough     None NOCACHE false   Directsync NOCACHE true   Writeback 0 false   Unsafe NOFLUSH false   Writethrough 0 true    设置c">
+<meta name="keywords" content="qemu">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kvm-interrupt">
-<meta property="og:url" content="https://citizen4yu.github.io/2018/07/15/kvm-interrupt/index.html">
+<meta property="og:title" content="qemu block cache">
+<meta property="og:url" content="https://citizen4yu.github.io/2018/10/27/qemu-block-cache/index.html">
 <meta property="og:site_name" content="Citizen4&#39;s Space">
-<meta property="og:description" content="kvm中断Linux kernel中断分为local APIC和IO API两种中断控制器，local APIC是实际处理中断的组件，IO APIC是分发外部设备的中断请求，最终还是由local APIC来处理中断。另外，多核cpu系统中，没有cpu都有1个ksoftirqd线程专门用于处理CPU上的中断。kvm、qemu的中断是模拟IO APIC组件，实现IO APIC的分发外设中断逻辑。以下基">
+<meta property="og:description" content="初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode()    cache mode flag writethrough     None NOCACHE false   Directsync NOCACHE true   Writeback 0 false   Unsafe NOFLUSH false   Writethrough 0 true    设置c">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-15T14:54:03.541Z">
+<meta property="og:updated_time" content="2019-01-01T02:26:12.347Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kvm-interrupt">
-<meta name="twitter:description" content="kvm中断Linux kernel中断分为local APIC和IO API两种中断控制器，local APIC是实际处理中断的组件，IO APIC是分发外部设备的中断请求，最终还是由local APIC来处理中断。另外，多核cpu系统中，没有cpu都有1个ksoftirqd线程专门用于处理CPU上的中断。kvm、qemu的中断是模拟IO APIC组件，实现IO APIC的分发外设中断逻辑。以下基">
+<meta name="twitter:title" content="qemu block cache">
+<meta name="twitter:description" content="初始化启动虚拟机后，首先解析cache flagbdrv_parse_cache_mode()    cache mode flag writethrough     None NOCACHE false   Directsync NOCACHE true   Writeback 0 false   Unsafe NOFLUSH false   Writethrough 0 true    设置c">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://citizen4yu.github.io/2018/07/15/kvm-interrupt/"/>
+  <link rel="canonical" href="https://citizen4yu.github.io/2018/10/27/qemu-block-cache/"/>
 
 
 
 
 
-  <title>kvm-interrupt | Citizen4's Space</title>
+  <title>qemu block cache | Citizen4's Space</title>
   
 
 
@@ -263,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/15/kvm-interrupt/">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/10/27/qemu-block-cache/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Citizen4">
@@ -280,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">kvm-interrupt</h1>
+          <h1 class="post-title" itemprop="name headline">qemu block cache</h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-15T21:47:46+08:00">
-                2018-07-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-27T15:03:29+08:00">
+                2018-10-27
               </time>
             
 
@@ -315,8 +315,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -352,110 +352,87 @@
       
 
       
-        <h1 id="kvm中断"><a href="#kvm中断" class="headerlink" title="kvm中断"></a>kvm中断</h1><p>Linux kernel中断分为local APIC和IO API两种中断控制器，local APIC是实际处理中断的组件，IO APIC是分发外部设备的中断请求，最终还是由local APIC来处理中断。另外，多核cpu系统中，没有cpu都有1个ksoftirqd线程专门用于处理CPU上的中断。kvm、qemu的中断是模拟IO APIC组件，实现IO APIC的分发外设中断逻辑。<br>以下基于linux-3.11.1、qemu-2.12.0</p>
-<h2 id="1-kvm中断注入准备工作（中断的虚拟化）"><a href="#1-kvm中断注入准备工作（中断的虚拟化）" class="headerlink" title="1. kvm中断注入准备工作（中断的虚拟化）"></a>1. kvm中断注入准备工作（中断的虚拟化）</h2><pre><code>kvm_vm_ioctl（KVM_IRQ_LINE）
-    kvm_vm_ioctl_irq_line
-        kvm_set_irq（irq_set[i].set）
-            kvm_ioapic_set_irq（有qemu各设备中断初始化中断路由表时设置callback，如下流程）
-                ioapic_service
-                    ioapic_deliver
-                        kvm_irq_delivery_to_apic
-                            kvm_apic_set_irq
-                                __apic_accept_irq（APIC_DM_FIXED，kvm_x86_ops-&gt;deliver_posted_interrupt，VMX初始化时设置deliver回调，见如下流程）
-                                    vmx_deliver_posted_interrupt（设置中断位，并请求事件KVM_REQ_EVENT，等待下次vm entry进行中断注入）
+        <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>启动虚拟机后，首先解析cache flag<br>bdrv_parse_cache_mode()</p>
+<table>
+<thead>
+<tr>
+<th>cache mode</th>
+<th>flag</th>
+<th>writethrough</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>NOCACHE</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Directsync</td>
+<td>NOCACHE</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Writeback</td>
+<td>0</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Unsafe</td>
+<td>NOFLUSH</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Writethrough</td>
+<td>0</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<p>设置cache mode变量, drive_new():</p>
+<table>
+<thead>
+<tr>
+<th>no</th>
+<th>cache.writeback</th>
+<th>cache.direct</th>
+<th>cache.no-flush</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Directsync</td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Writetback</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Unsafe</td>
+<td>true</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Writethrough</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
 
-qemu进程各设备初始化时注册中断路由表：
-    kvm_irqchip_commit_routes
-        kvm_vm_ioctl（KVM_SET_GSI_ROUTING，调用io进入kvm处理流程）
-            kvm_vm_ioctl（KVM_SET_GSI_ROUTING）
-                kvm_set_irq_routing
-                    setup_routing_entry
-                        kvm_set_routing_entry
-                            kvm_set_pic_irq（传统PCI中断）
-                            kvm_set_pic_irq（传统PIC中断）
-                            kvm_set_ioapic_irq（MSI中断）
-
-VMX初始化：
-    vmx_init
-        kvm_init（vmx_x86_ops, .deliver_posted_interrupt = vmx_deliver_posted_interrupt）
-</code></pre><h2 id="2-kvm中断注入"><a href="#2-kvm中断注入" class="headerlink" title="2. kvm中断注入"></a>2. kvm中断注入</h2><pre><code>kvm_vm_ioctl（KVM_CREATE_VCPU）
-    kvm_vm_ioctl_create_vcpu
-        create_vcpu_fd（注册kvm_vcpu_fops，.compat_ioctl= kvm_vcpu_compat_ioctl）
-
-kvm_vcpu_compat_ioctl（KVM_RUN）
-    kvm_arch_vcpu_ioctl_run
-        __vcpu_run
-            vcpu_enter_guest
-                inject_pending_event（加载到真正的cpu上）
-                    kvm_cpu_has_injectable_intr
-                        kvm_apic_has_interrupt
-                            apic_find_highest_irr（kvm_x86_ops-&gt;sync_pir_to_irr=vmx_sync_pir_to_irr）
-                                vmx_sync_pir_to_irr
-                                apic_search_irr
-                    kvm_queue_interrupt（记录中断到vcpu）
-                    vmx_inject_irq（vmx_x86_ops，.set_irq = vmx_inject_irq）
-                        vmcs_write32（根据intel硬件手册写到对应寄存器）
-</code></pre><h2 id="3-中断向量表的初始化"><a href="#3-中断向量表的初始化" class="headerlink" title="3. 中断向量表的初始化"></a>3. 中断向量表的初始化</h2><pre><code>qemu中初始化中断向量表：
-    main
-        machine_run_board_init
-            pc_init_v2_12
-                pc_init1
-                    kvm_pc_setup_irq_routing
-                        kvm_irqchip_commit_routes
-
-kvm中断向量表的初始化：
-    kvm_vm_ioctl
-        kvm_arch_vm_ioctl
-            kvm_setup_default_irq_routing（default_routing初始化了PIC、IOPIC）
-                kvm_set_irq_routing（分配中断向量表空间，并将default_routing每个中断元素填充到中断向量表的map表中）
-                    setup_routing_entry（设置中断entry各元素的值，并插入map表）
-                        kvm_set_routing_entry（初始化中断的set callback）
-                    kvm_irq_routing_update（更新虚机kvm的中断向量表）
-
-3个重要的结构体：
-    中断entry信息，x86 32bit共40个，x86 64bit共64个，包括PIC、IOPIC、MSI看后续分析
-    struct kvm_irq_routing_entry {                 
-        __u32 gsi;                                 
-        __u32 type;                                
-        __u32 flags;                               
-           __u32 pad;                                 
-        union {                                    
-            struct kvm_irq_routing_irqchip irqchip;
-            struct kvm_irq_routing_msi msi;        
-            __u32 pad[8];                          
-            } u;                                       
-    };                                             
-
-    kvm在kernel中的中断entry，其实跟上面的kvm_irq_routing_entry差不多，区别在于增加了set这个callback，上文有说到                                
-    struct kvm_kernel_irq_routing_entry {                    
-        u32 gsi;                                             
-        u32 type;                                            
-        int (*set)(struct kvm_kernel_irq_routing_entry *e,   
-               struct kvm *kvm, int irq_source_id, int level,
-              bool line_status);                            
-        union {                                              
-            struct {                                         
-                    unsigned irqchip;                            
-                 unsigned pin;                                
-        } irqchip;                                       
-        struct msi_msg msi;                              
-            };                                                   
-        struct hlist_node link;                              
-    };                                                           
-
-    真正的kvm中断向量表，包含kvm所有的中断类型PIC、IOPOC、MSI、map用于将同一个gsi号的不同中断进行归类（hash表的味道）
-    struct kvm_irq_routing_table {                                    
-        int chip[KVM_NR_IRQCHIPS][KVM_IRQCHIP_NUM_PINS];              
-        struct kvm_kernel_irq_routing_entry *rt_entries;              
-        u32 nr_rt_entries;                                            
-        /*                                                            
-         * Array indexed by gsi. Each entry contains list of irq chips
-         * the gsi is connected to.                                   
-         */                                                           
-        struct hlist_head map[0];                                     
-    }; 
-</code></pre><h2 id="4-MSI中断"><a href="#4-MSI中断" class="headerlink" title="4. MSI中断"></a>4. MSI中断</h2><pre><code>写一段特殊内存产生中断，相比传统PIC中断的好处是不在受中断管脚数量的限制，同时也提高了设备的多个中断的并行效率（因为传统中断因管脚有限，存在复用）。MSI中断实在PCI2.2协议中定义的，其扩展类型MSI-X中断是在PCI3.0协议中定义。                                                               
-</code></pre>
       
     </div>
     
@@ -472,7 +449,7 @@ kvm中断向量表的初始化：
       
         <div class="post-tags">
           
-            <a href="/tags/kvm-qemu-interrupt/" rel="tag"># kvm qemu interrupt</a>
+            <a href="/tags/qemu/" rel="tag"># qemu</a>
           
         </div>
       
@@ -485,8 +462,8 @@ kvm中断向量表的初始化：
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/07/15/virtio/" rel="next" title="virtio">
-                <i class="fa fa-chevron-left"></i> virtio
+              <a href="/2018/09/22/qom/" rel="next" title="qemu object module">
+                <i class="fa fa-chevron-left"></i> qemu object module
               </a>
             
           </div>
@@ -494,10 +471,6 @@ kvm中断向量表的初始化：
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/07/22/virt-cpu/" rel="prev" title="cpu的虚拟化">
-                cpu的虚拟化 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -578,7 +551,7 @@ kvm中断向量表的初始化：
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -600,7 +573,7 @@ kvm中断向量表的初始化：
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -661,7 +634,7 @@ kvm中断向量表的初始化：
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#kvm中断"><span class="nav-number">1.</span> <span class="nav-text">kvm中断</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-kvm中断注入准备工作（中断的虚拟化）"><span class="nav-number">1.1.</span> <span class="nav-text">1. kvm中断注入准备工作（中断的虚拟化）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-kvm中断注入"><span class="nav-number">1.2.</span> <span class="nav-text">2. kvm中断注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-中断向量表的初始化"><span class="nav-number">1.3.</span> <span class="nav-text">3. 中断向量表的初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-MSI中断"><span class="nav-number">1.4.</span> <span class="nav-text">4. MSI中断</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.</span> <span class="nav-text">初始化</span></a></li></ol></div>
             
 
           </div>
@@ -681,7 +654,7 @@ kvm中断向量表的初始化：
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -263,6 +263,227 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/10/27/qemu-block-cache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/10/27/qemu-block-cache/" itemprop="url">qemu block cache</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-27T15:03:29+08:00">
+                2018-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>启动虚拟机后，首先解析cache flag<br>bdrv_parse_cache_mode()</p>
+<table>
+<thead>
+<tr>
+<th>cache mode</th>
+<th>flag</th>
+<th>writethrough</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>NOCACHE</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Directsync</td>
+<td>NOCACHE</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Writeback</td>
+<td>0</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Unsafe</td>
+<td>NOFLUSH</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Writethrough</td>
+<td>0</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
+<p>设置cache mode变量, drive_new():</p>
+<table>
+<thead>
+<tr>
+<th>no</th>
+<th>cache.writeback</th>
+<th>cache.direct</th>
+<th>cache.no-flush</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>true</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Directsync</td>
+<td>false</td>
+<td>true</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Writetback</td>
+<td>true</td>
+<td>false</td>
+<td>false</td>
+</tr>
+<tr>
+<td>Unsafe</td>
+<td>true</td>
+<td>false</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Writethrough</td>
+<td>false</td>
+<td>false</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/09/22/qom/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -317,8 +538,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -499,8 +720,8 @@ main
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -827,8 +1048,8 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -981,8 +1202,8 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -1422,8 +1643,8 @@ gdb 应用程序路径 Coredump
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/虚拟化/" itemprop="url" rel="index">
-                    <span itemprop="name">虚拟化</span>
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
                   </a>
                 </span>
 
@@ -1666,156 +1887,6 @@ setsid()脱离父进程的会话、进程组
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/08/05/IO/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Citizen4">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Citizen4's Space">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/05/IO/" itemprop="url">Linux IO多路复用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-05T08:36:24+08:00">
-                2018-08-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>监听文件描述符的状态来进行相应的读写操作，3个函数：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select</span><br><span class="line">poll</span><br><span class="line">epoll</span><br></pre></td></tr></table></figure>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span>(<span class="params"><span class="keyword">int</span> nfds, fd_set *readfds, fd_set *writefds,</span></span></span><br><span class="line"><span class="function"><span class="params">           fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span>(<span class="params"><span class="keyword">struct</span> pollfd *fds, nfds_t nfds, <span class="keyword">int</span> timeout</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span>(<span class="params"><span class="keyword">int</span> size</span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span>(<span class="params"><span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *<span class="keyword">event</span></span>)</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span>(<span class="params"><span class="keyword">int</span> epfd, <span class="keyword">struct</span> epoll_event *events,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout</span>)</span>;</span><br></pre></td></tr></table></figure>
-<p><code>select</code>将监听的读、写、except三类文件描述符分开传入，且nfds最大支持1024个。</p>
-<p><code>poll</code>类似于select，只不过将这3类文件描述符放到一个数组中了，同时fds没有最大限制。</p>
-<p><code>select</code> <code>poll</code>需要逐个轮询每个fd的状态，且每个fd的用户空间数据需要独立copy（内核代码： <code>do_sys_poll</code> -&gt; <code>copy_from_user</code>）。</p>
-<p><code>epoll</code>是以上2个函数的增强版，nfds没有最大限制，理论上跟系统支持的最大文件描述符个数相等，所有fd的用户空间数据一次拷贝完成，且不用轮询每个fd的状态，而是通过注册回调的方式，效率明显提高。</p>
-<p>各种I/O阻塞时间比较：<br><img src="https://i.imgur.com/5h8Uh6N.png" alt=""></p>
-<p>参考：<br><a href="https://segmentfault.com/a/1190000003063859" target="_blank" rel="noopener">Linux I/O详解</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1870,7 +1941,7 @@ setsid()脱离父进程的会话、进程组
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1892,7 +1963,7 @@ setsid()脱离父进程的会话、进程组
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1957,7 +2028,7 @@ setsid()脱离父进程的会话、进程组
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
