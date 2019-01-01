@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="qemu," />
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="学无止境">
-<meta name="keywords" content="C, KVM, QEMU">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Citizen4&#39;s Space">
-<meta property="og:url" content="https://citizen4yu.github.io/tags/kvm/index.html">
+<meta name="description" content="qemu event机制给予glib的event来实现，在其基础上进行扩充，满足qemu的业务，支持4种event source： aio-context、 io-handler、 iothread、 block io. 初始化aio-context &amp;amp;&amp;amp; io-handler: main     qemu_init_main_loop         aio_context_ne">
+<meta name="keywords" content="qemu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qemu-event">
+<meta property="og:url" content="https://citizen4yu.github.io/2019/01/01/qemu-event/index.html">
 <meta property="og:site_name" content="Citizen4&#39;s Space">
-<meta property="og:description" content="学无止境">
+<meta property="og:description" content="qemu event机制给予glib的event来实现，在其基础上进行扩充，满足qemu的业务，支持4种event source： aio-context、 io-handler、 iothread、 block io. 初始化aio-context &amp;amp;&amp;amp; io-handler: main     qemu_init_main_loop         aio_context_ne">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-01T04:52:40.429Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Citizen4&#39;s Space">
-<meta name="twitter:description" content="学无止境">
+<meta name="twitter:title" content="qemu-event">
+<meta name="twitter:description" content="qemu event机制给予glib的event来实现，在其基础上进行扩充，满足qemu的业务，支持4种event source： aio-context、 io-handler、 iothread、 block io. 初始化aio-context &amp;amp;&amp;amp; io-handler: main     qemu_init_main_loop         aio_context_ne">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://citizen4yu.github.io/tags/kvm/"/>
+  <link rel="canonical" href="https://citizen4yu.github.io/2019/01/01/qemu-event/"/>
 
 
 
 
 
-  <title>标签: kvm | Citizen4's Space</title>
+  <title>qemu-event | Citizen4's Space</title>
   
 
 
@@ -144,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -248,138 +249,188 @@
           <div id="content" class="content">
             
 
+  <div id="posts" class="posts-expand">
+    
+
+  
+
   
   
   
-  <div class="post-block tag">
-
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>kvm<small>标签</small>
-        </h1>
-      </div>
-
-      
-        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2019/01/01/qemu-event/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/07/22/kvm-debug-trace/" itemprop="url">
-              
-                <span itemprop="name">kvm debug trace</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">qemu-event</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-22T17:48:28+08:00"
-              content="2018-07-22" >
-          07-22
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-01T12:39:34+08:00">
+                2019-01-01
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/22/kvm-nest/" itemprop="url">
-              
-                <span itemprop="name">kvm嵌套</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-22T17:45:19+08:00"
-              content="2018-07-22" >
-          07-22
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
 
       
-        
+        <p>qemu event机制给予glib的event来实现，在其基础上进行扩充，满足qemu的业务，支持4种event source： aio-context、 io-handler、 iothread、 block io.</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><pre><code>aio-context &amp;&amp; io-handler:
+main
+    qemu_init_main_loop
+        aio_context_new
+        g_source_set_name
+        g_source_attach
+        iohandler_get_g_source
+        g_source_set_name
+        g_source_attach
+</code></pre><p>qemu_init_main_loop中重要的对aio-context、io-handle两种event source做了初始化，其中block io是用的aio-context，并且支持multiple-iothreads。初始化中有2个重要的操作： aio_source_funcs回调的注册、event的初始化，aio_source_funcs是按照glib eventloop的规范实现的一组函数（glib manual中详细介绍这类函数蔟），用于qemu mainloop各阶段回调。event初始化时调用系统函数eventfd()，并且在aio_set_event_notifier设置io read、write、 poll。</p>
+<pre><code>iothread:
+    iothread_complete
+        qemu_thread_create
+            iothread_run
+                aio_poll
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/22/virt-cpu/" itemprop="url">
-              
-                <span itemprop="name">cpu的虚拟化</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-22T16:39:43+08:00"
-              content="2018-07-22" >
-          07-22
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-      
-        
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/07/15/kvm-interrupt/" itemprop="url">
-              
-                <span itemprop="name">kvm-interrupt</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-07-15T21:47:46+08:00"
-              content="2018-07-15" >
-          07-15
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+block io:
+    bdrv_new
+        bs-&gt;aio_context = qemu_get_aio_context() （qemu_aio_context实际还是使用的aio-context）
+</code></pre>
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/qemu/" rel="tag"># qemu</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/01/shell-base/" rel="next" title="shell-base">
+                <i class="fa fa-chevron-left"></i> shell-base
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -387,6 +438,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -407,8 +462,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -500,6 +564,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.</span> <span class="nav-text">初始化</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -640,6 +720,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

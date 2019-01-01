@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[qemu-event]]></title>
+    <url>%2F2019%2F01%2F01%2Fqemu-event%2F</url>
+    <content type="text"><![CDATA[qemu event机制给予glib的event来实现，在其基础上进行扩充，满足qemu的业务，支持4种event source： aio-context、 io-handler、 iothread、 block io. 初始化aio-context &amp;&amp; io-handler: main qemu_init_main_loop aio_context_new g_source_set_name g_source_attach iohandler_get_g_source g_source_set_name g_source_attach qemu_init_main_loop中重要的对aio-context、io-handle两种event source做了初始化，其中block io是用的aio-context，并且支持multiple-iothreads。初始化中有2个重要的操作： aio_source_funcs回调的注册、event的初始化，aio_source_funcs是按照glib eventloop的规范实现的一组函数（glib manual中详细介绍这类函数蔟），用于qemu mainloop各阶段回调。event初始化时调用系统函数eventfd()，并且在aio_set_event_notifier设置io read、write、 poll。 iothread: iothread_complete qemu_thread_create iothread_run aio_poll block io: bdrv_new bs-&gt;aio_context = qemu_get_aio_context() （qemu_aio_context实际还是使用的aio-context）]]></content>
+      <categories>
+        <category>virtual</category>
+      </categories>
+      <tags>
+        <tag>qemu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[shell-base]]></title>
     <url>%2F2019%2F01%2F01%2Fshell-base%2F</url>
     <content type="text"><![CDATA[shell种类sh: Bourne shellbash: Bourne again shell, 兼容sh，但与sh语法上有一些不同dash: Debian Almquist shell, 是ash从NetBSD移植到Linux的，ubuntu从6.10开始支持，Debian也支持，运行速度比较快csh: Cshell 查看系统支持的shell类型# cat /etc/shells /bin/sh /bin/dash /bin/bash /bin/rbash /usr/bin/tmux /usr/bin/screen 查看系统默认shell# echo $SHELL /bin/bash sh一般是软连接到bash、dash # ll /bin/sh lrwxrwxrwx 1 root root 4 Apr 26 2018 /bin/sh -&gt; dash* she-bang脚本文件第一行通常类似于“#！/bin/bash”, 作用是指明脚本的解释程序，如果未执行则使用系统中默认的。UNIX术语中，符号“#”成为“sharp”，符号“！”称为bang，因此“#！”称为she-bang。]]></content>
