@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="kvm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta name="keywords" content="kvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cpu的虚拟化">
+<meta property="og:url" content="https://citizen4yu.github.io/2018/07/22/virt-cpu/index.html">
+<meta property="og:site_name" content="Citizen4&#39;s Space">
+<meta property="og:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://i.imgur.com/pMeArub.png">
+<meta property="og:updated_time" content="2019-01-01T02:57:14.289Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="cpu的虚拟化">
+<meta name="twitter:description" content="qemu层vcpu虚拟化qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建 main     machine_run_board_init         pc_init_v2_12             pc_init1                 pc_cpus_init                     pc_new_cpu">
+<meta name="twitter:image" content="https://i.imgur.com/pMeArub.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://citizen4yu.github.io/2018/07/22/virt-cpu/"/>
+
+
+
+
+
+  <title>cpu的虚拟化 | Citizen4's Space</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Citizen4's Space</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Study and Up</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://citizen4yu.github.io/2018/07/22/virt-cpu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Citizen4">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Citizen4's Space">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">cpu的虚拟化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T16:39:43+08:00">
+                2018-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/virtual/" itemprop="url" rel="index">
+                    <span itemprop="name">virtual</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="qemu层vcpu虚拟化"><a href="#qemu层vcpu虚拟化" class="headerlink" title="qemu层vcpu虚拟化"></a>qemu层vcpu虚拟化</h2><p>qemu层客户机启动时，初始化vcpu，传入CPU id，由kvm真正创建</p>
+<pre><code>main
+    machine_run_board_init
+        pc_init_v2_12
+            pc_init1
+                pc_cpus_init
+                    pc_new_cpu
+                        ...     (此处省略一堆object操作)、
+                        x86_cpu_realizefn
+                            qemu_init_vcpu
+                                qemu_kvm_start_vcpu
+                                    qemu_thread_create(创建vcpu线程)
+                                        qemu_thread_start
+                                            qemu_kvm_cpu_thread_fn
+                                                kvm_init_vcpu
+                                                    kvm_get_vcpu
+                                                kvm_init_cpu_signals
+                                                kvm_cpu_exec(运行vcpu)
+                                                    kvm_vcpu_ioctl(KVM_RUN)
+                                                    kvm_arch_post_run
+</code></pre><p>虚拟机启动时根据上层（libvirt或qemu cmdline）配置的vcpu个数、cpu feature、cpu topology，初始化cpu属性（pc_cpus_init-&gt;pc_possible_cpu_arch_ids），在创建vcpu线程（pc_new_cpu）。创建vcpu线程有3个工作要做：第一，初始化vcpu（kvm_init_vcpu中发送IO KVM_CREATE_VCPU创建“kvm-vcpu”文件描述符；通过mmap通过memory；根据不同的hypervisor类型属性初始化kvm_arch_init_vcpu）。第二，初始化vcpu线程signals<br> kvm_init_cpu_signals。第三，vcpu真正的工作逻辑kvm_cpu_exec。</p>
+<p>4个重要结构体：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span>                </span><br><span class="line">    <span class="keyword">uint64_t</span> arch_id;           </span><br><span class="line">    <span class="keyword">int64_t</span> vcpus_count;        </span><br><span class="line">    CpuInstanceProperties props;</span><br><span class="line">    Object *cpu;                </span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *type;           </span><br><span class="line">&#125; CPUArchId;</span><br></pre></td></tr></table></figure></p>
+<p>初始化vcpu基本配置（cpu type、 arch id、 cpu topolopy）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CPUState</span> &#123;</span>          </span><br><span class="line">    <span class="comment">/*&lt; private &gt;*/</span>        </span><br><span class="line">    DeviceState parent_obj;</span><br><span class="line">    <span class="comment">/*&lt; public &gt;*/</span>         </span><br><span class="line">                           </span><br><span class="line">    <span class="keyword">int</span> nr_cores;          </span><br><span class="line">    <span class="keyword">int</span> nr_threads;        </span><br><span class="line">	 ...</span><br><span class="line">	<span class="keyword">uint16_t</span> pending_tlb_flush;</span><br><span class="line">                               </span><br><span class="line">    <span class="keyword">int</span> hvf_fd;                </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个结构包含vcpu所有信息，主要qemu中cpu运行数据。</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">struct X86CPU &#123;                  </span><br><span class="line">    <span class="comment">/*&lt; private &gt;*/</span>              </span><br><span class="line">    CPUState parent_obj<span class="comment">;         </span></span><br><span class="line">    <span class="comment">/*&lt; public &gt;*/</span>               </span><br><span class="line">                                 </span><br><span class="line">    CPUX86State env<span class="comment">;             </span></span><br><span class="line">                                 </span><br><span class="line">    <span class="keyword">bool </span>hyperv_vapic<span class="comment">;           </span></span><br><span class="line">    <span class="keyword">bool </span>hyperv_relaxed_timing<span class="comment">;  </span></span><br><span class="line">    int hyperv_spinlock_attempts<span class="comment">;</span></span><br><span class="line">    char *hyperv_vendor_id<span class="comment">;</span></span><br><span class="line">		...</span><br><span class="line">    int32_t node_id<span class="comment">; /* NUMA node this CPU belongs to */</span></span><br><span class="line">    int32_t socket_id<span class="comment">;                                  </span></span><br><span class="line">    int32_t core_id<span class="comment">;                                    </span></span><br><span class="line">    int32_t thread_id<span class="comment">;                                  </span></span><br><span class="line">                                                        </span><br><span class="line">    int32_t hv_max_vps<span class="comment">;                                 </span></span><br><span class="line">&#125;<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>x86结构下cpu特性使用情况，numa信息，状态（以下CPUX86State）。   </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">CPUX86State</span> &#123;</span>                                         </span><br><span class="line">    <span class="comment">/* standard registers */</span>                                         </span><br><span class="line">    target_ulong regs[CPU_NB_REGS];                                  </span><br><span class="line">    target_ulong eip;                                                </span><br><span class="line">    target_ulong eflags; <span class="comment">/* eflags register. During CPU emulation, CC</span></span><br><span class="line"><span class="comment">                        flags and DF are set to zero because they are</span></span><br><span class="line"><span class="comment">                        stored elsewhere */</span>                          </span><br><span class="line">                                                                     </span><br><span class="line">    <span class="comment">/* emulator internal eflags handling */</span>                          </span><br><span class="line">    target_ulong cc_dst;                                             </span><br><span class="line">    target_ulong cc_src;                                             </span><br><span class="line">    target_ulong cc_src2;                                            </span><br><span class="line">    <span class="keyword">uint32_t</span> cc_op;</span><br><span class="line">		...</span><br><span class="line">	    <span class="comment">/* vmstate */</span>                  </span><br><span class="line">    <span class="keyword">uint16_t</span> fpus_vmstate;         </span><br><span class="line">    <span class="keyword">uint16_t</span> fptag_vmstate;        </span><br><span class="line">    <span class="keyword">uint16_t</span> fpregs_format_vmstate;</span><br><span class="line">                                   </span><br><span class="line">    <span class="keyword">uint64_t</span> xss;                  </span><br><span class="line">                                   </span><br><span class="line">    TPRAccess tpr_access_type;     </span><br><span class="line">&#125; CPUX86State;</span><br></pre></td></tr></table></figure>
+<p>x86 vcpu state，更偏底层，很多寄存器会与linux kernel kvm交互。</p>
+<h2 id="kvm层vcpu流程"><a href="#kvm层vcpu流程" class="headerlink" title="kvm层vcpu流程"></a>kvm层vcpu流程</h2><pre><code>kvm_vm_ioctl (KVM_CREATE_VCPU)
+    kvm_vm_ioctl_create_vcpu
+        kvm_arch_vcpu_create (初始化kvm_vcpu结构)
+        create_vcpu_fd （创建vcpu文件描述符，初始化结构kvm_vcpu_fops）
+        kvm_arch_vcpu_postcreate （设置时钟）
+</code></pre><p>kvm中vcpu的创建过程相对简单，3个重要步骤： 第一，初始化kvm_vcpu结构；第二，创建vcpu文件描述符；第三，设置时钟。</p>
+<p>vcpu running流程：<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kvm_vcpu_compat_ioctl (由上述create_vcpu_fd初始化kvm_vcpu_fops)</span><br><span class="line">	kvm_cpu_ioctl (<span class="name">KVM_RUN</span>)</span><br><span class="line">		kvm_arch_vcpu_ioctl_run</span><br><span class="line">			_vcpu_run</span><br></pre></td></tr></table></figure></p>
+<p>重要结构体：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kvm_vcpu</span> &#123;</span>                            </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">kvm</span> *<span class="title">kvm</span>;</span>                         </span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_PREEMPT_NOTIFIERS              </span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">preempt_notifier</span> <span class="title">preempt_notifier</span>;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span>                                       </span></span><br><span class="line">    <span class="keyword">int</span> cpu;                                 </span><br><span class="line">    <span class="keyword">int</span> vcpu_id;                             </span><br><span class="line">    <span class="keyword">int</span> srcu_idx;</span><br><span class="line">		...</span><br><span class="line">    <span class="keyword">bool</span> preempted;           </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">kvm_vcpu_arch</span> <span class="title">arch</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h2 id="CPU扩展知识点（intel）"><a href="#CPU扩展知识点（intel）" class="headerlink" title="CPU扩展知识点（intel）"></a>CPU扩展知识点（intel）</h2><pre><code>processor    : 3
+vendor_id    : GenuineIntel        表示cpu供应商，GenuineIntel指intel官方产
+cpu family  : 6                    cpu系列号，可以理解为cpu大版本
+                                    1： 表示8086和80186级芯片
+                                    2： 表示286级芯片
+                                    3： 表示386级芯片
+                                    4： 表示486级芯片（SX、 DX、 DX2、 DX4）
+                                    5： 表示P5级芯片（Pentium处理器和含MMX技术的Pentium处理器）
+                                    6： 表示P6级芯片（包含Celeron、 Pentium 2、 Pentium 3系列）
+                                    F： 表示Xeon处理器、 Pentium 4处理器
+model        : 58                   表示某系列号下的子系列号，可以理解为cpu的小版本号，同时model还有name，如： Westmere、 SandyBridge
+model name    : Intel(R) Core(TM) i5-3210M CPU @ 2.50GHz
+stepping    : 9                     又叫步进值，表示该款产品经历一些迭代版本
+microcode    : 0x1c                 微码版本，可以给cpu打补丁
+cpu MHz        : 2501.000
+cache size    : 3072 KB
+physical id    : 6
+siblings    : 1
+core id        : 0
+cpu cores    : 1
+apicid        : 6
+initial apicid    : 6
+fpu        : yes
+fpu_exception    : yes
+cpuid level    : 13
+wp        : yes
+flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx rdtscp lm constant_tsc arch_perfmon nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cpuid_fault fsgsbase tsc_adjust smep arat
+bugs        :
+bogomips    : 5002.00
+clflush size    : 64
+cache_alignment    : 64
+address sizes    : 43 bits physical, 48 bits virtual
+power management:
+
+</code></pre><h2 id="VCPU工作模型"><a href="#VCPU工作模型" class="headerlink" title="VCPU工作模型"></a>VCPU工作模型</h2><p><img src="https://i.imgur.com/pMeArub.png" alt="">                          </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kvm/" rel="tag"># kvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/15/kvm-interrupt/" rel="next" title="kvm-interrupt">
+                <i class="fa fa-chevron-left"></i> kvm-interrupt
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/22/kvm-nest/" rel="prev" title="kvm嵌套">
+                kvm嵌套 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.png"
+                alt="Citizen4" />
+            
+              <p class="site-author-name" itemprop="name">Citizen4</p>
+              <p class="site-description motion-element" itemprop="description">学无止境</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/citizen4yu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://gitlab.com/citizen4" target="_blank" title="Gitlab">
+                      
+                        <i class="fa fa-fw fa-gitlab"></i>Gitlab</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:citizen4.yu@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://citizen4yu.github.io" target="_blank" title="wechat">
+                      
+                        <i class="fa fa-fw fa-weixin"></i>wechat</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#qemu层vcpu虚拟化"><span class="nav-number">1.</span> <span class="nav-text">qemu层vcpu虚拟化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kvm层vcpu流程"><span class="nav-number">2.</span> <span class="nav-text">kvm层vcpu流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU扩展知识点（intel）"><span class="nav-number">3.</span> <span class="nav-text">CPU扩展知识点（intel）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VCPU工作模型"><span class="nav-number">4.</span> <span class="nav-text">VCPU工作模型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Citizen4</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
